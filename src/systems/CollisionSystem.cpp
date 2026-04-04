@@ -12,13 +12,13 @@ namespace Breakout
 void CollisionSystem::Update(Ball& ball, Paddle& paddle,
                              std::vector<Brick>& bricks) const
 {
-    ClampPaddleToWindow(paddle);
-    HandleWallCollisions(ball);
-    HandlePaddleCollision(ball, paddle);
-    HandleBrickCollisions(ball, bricks);
+    _clampPaddleToWindow(paddle);
+    _handleWallCollisions(ball);
+    _handlePaddleCollision(ball, paddle);
+    _handleBrickCollisions(ball, bricks);
 }
 
-void CollisionSystem::ClampPaddleToWindow(Paddle& paddle) const
+void CollisionSystem::_clampPaddleToWindow(Paddle& paddle) const
 {
     auto pos = paddle.GetPosition();
     float minX = 0.0f;
@@ -27,7 +27,7 @@ void CollisionSystem::ClampPaddleToWindow(Paddle& paddle) const
     paddle.SetPosition(pos);
 }
 
-void CollisionSystem::HandleWallCollisions(Ball& ball) const
+void CollisionSystem::_handleWallCollisions(Ball& ball) const
 {
     auto pos = ball.GetPosition();
     auto vel = ball.GetVelocity();
@@ -68,7 +68,7 @@ void CollisionSystem::HandleWallCollisions(Ball& ball) const
         Game::Get()->GetEventBus().Publish(BallHitWallEvent{ball});
 }
 
-void CollisionSystem::HandlePaddleCollision(Ball& ball, const Paddle& paddle) const
+void CollisionSystem::_handlePaddleCollision(Ball& ball, const Paddle& paddle) const
 {
     auto ballPos = ball.GetPosition();
     auto ballVel = ball.GetVelocity();
@@ -80,7 +80,7 @@ void CollisionSystem::HandlePaddleCollision(Ball& ball, const Paddle& paddle) co
     auto paddlePos  = paddle.GetPosition();
     auto paddleSize = paddle.GetSize();
 
-    Collision collision = AABBCircleCollision(ballPos, r, paddlePos, paddleSize);
+    Collision collision = _AABBCircleCollision(ballPos, r, paddlePos, paddleSize);
 
     if (!collision.Hit)
         return;
@@ -100,7 +100,7 @@ void CollisionSystem::HandlePaddleCollision(Ball& ball, const Paddle& paddle) co
     Game::Get()->GetEventBus().Publish(BallHitPaddleEvent{ball, paddle});
 }
 
-void CollisionSystem::HandleBrickCollisions(Ball& ball, std::vector<Brick>& bricks) const
+void CollisionSystem::_handleBrickCollisions(Ball& ball, std::vector<Brick>& bricks) const
 {
     auto ballPos = ball.GetPosition();
     auto ballVel = ball.GetVelocity();
@@ -114,7 +114,7 @@ void CollisionSystem::HandleBrickCollisions(Ball& ball, std::vector<Brick>& bric
         auto brickPos  = brick.GetPosition();
         auto brickSize = brick.GetSize();
 
-        Collision collision = AABBCircleCollision(ballPos, r, brickPos, brickSize);
+        Collision collision = _AABBCircleCollision(ballPos, r, brickPos, brickSize);
 
         if (!collision.Hit)
             continue;
@@ -150,7 +150,7 @@ void CollisionSystem::HandleBrickCollisions(Ball& ball, std::vector<Brick>& bric
     }
 }
 
-auto CollisionSystem::AABBCircleCollision(const sf::Vector2f& circlePos, float radius, const sf::Vector2f& rectPos, 
+auto CollisionSystem::_AABBCircleCollision(const sf::Vector2f& circlePos, float radius, const sf::Vector2f& rectPos, 
     const sf::Vector2f& rectSize) const -> Collision
 {
     float closestX = std::clamp(circlePos.x, rectPos.x, rectPos.x + rectSize.x);

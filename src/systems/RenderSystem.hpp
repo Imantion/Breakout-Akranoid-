@@ -24,7 +24,7 @@ public:
                 const std::vector<Brick>& bricks);
 
 private:
-    void CreateBrickTexture();
+    void _createBrickTexture();
 
     sf::RenderTexture m_BrickTexture;
 };

@@ -16,9 +16,9 @@ Game::Game()
 {
     s_Instance = this;
     m_Window.setFramerateLimit(0);
-    ResetBall();
-    InitBricks();
-    SubscribeEvents();
+    _resetBall();
+    _initBricks();
+    _subscribeEvents();
 }
 
 Game::~Game()
@@ -47,20 +47,20 @@ void Game::Run()
         float frameTime = clock.restart().asSeconds();
         accumulator += frameTime;
 
-        ProcessInput();
+        _processInput();
 
         while (accumulator >= g_FixedTimeStep)
         {
-            Update(g_FixedTimeStep);
+            _update(g_FixedTimeStep);
             accumulator -= g_FixedTimeStep;
         }
 
         float interpolation = accumulator / g_FixedTimeStep;
-        Render(interpolation);
+        _render(interpolation);
     }
 }
 
-void Game::ProcessInput()
+void Game::_processInput()
 {
     while (const auto event = m_Window.pollEvent())
     {
@@ -77,18 +77,18 @@ void Game::ProcessInput()
     m_PaddleController.Update(m_Paddle);
 }
 
-void Game::Update(float dt)
+void Game::_update(float dt)
 {
     m_MovementSystem.Update(m_Paddle, m_Ball, dt);
     m_CollisionSystem.Update(m_Ball, m_Paddle, m_Bricks);
 }
 
-void Game::Render([[maybe_unused]] float interpolation)
+void Game::_render([[maybe_unused]] float interpolation)
 {
     m_RenderSystem.Render(m_Window, m_Paddle, m_Ball, m_Bricks);
 }
 
-void Game::InitBricks()
+void Game::_initBricks()
 {
     m_Bricks.reserve(g_BrickColumns * g_BrickRows);
 
@@ -106,15 +106,15 @@ void Game::InitBricks()
     }
 }
 
-void Game::SubscribeEvents()
+void Game::_subscribeEvents()
 {
     m_EventBus.Subscribe<BallLostEvent>([this](const BallLostEvent&)
     {
-        ResetBall();
+        _resetBall();
     });
 }
 
-void Game::ResetBall()
+void Game::_resetBall()
 {
     m_Ball.SetPosition({g_WindowWidth / 2.0f, g_WindowHeight / 2.0f});
     m_Ball.SetVelocity({g_BallSpeed * 0.7f, -g_BallSpeed * 0.7f});

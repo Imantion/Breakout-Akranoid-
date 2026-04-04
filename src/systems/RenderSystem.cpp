@@ -9,10 +9,10 @@ RenderSystem::RenderSystem()
           static_cast<unsigned>(g_BrickWidth),
           static_cast<unsigned>(g_BrickHeight)})
 {
-    CreateBrickTexture();
+    _createBrickTexture();
 }
 
-void RenderSystem::CreateBrickTexture()
+void RenderSystem::_createBrickTexture()
 {
     m_BrickTexture.clear(sf::Color::White);
 

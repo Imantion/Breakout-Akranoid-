@@ -31,13 +31,14 @@ public:
     EventBus& GetEventBus();
 
 private:
-    void ProcessInput();
-    void Update(float dt);
-    void Render(float interpolation);
+    void _processInput();
+    void _update(float dt);
+    // TODO(dkolomii): Actually use interpolation
+    void _render(float interpolation);
 
-    void InitBricks();
-    void SubscribeEvents();
-    void ResetBall();
+    void _initBricks();
+    void _subscribeEvents();
+    void _resetBall();
 
     static Game*       s_Instance;
 
