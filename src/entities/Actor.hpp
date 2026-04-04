@@ -8,7 +8,7 @@ namespace Breakout
 class Actor
 {
 public:
-    Actor(sf::Vector2f position, sf::Vector2f size);
+    Actor(const sf::Texture& texture, sf::Vector2f position, float width, float height);
     virtual ~Actor() = default;
 
     Actor(const Actor&) = default;
@@ -18,15 +18,22 @@ public:
 
     virtual void OnHit() {}
 
-    void         SetPosition(sf::Vector2f position);
-    sf::Vector2f GetPosition() const;
-    sf::Vector2f GetSize()     const;
+    void          SetPosition(sf::Vector2f position);
+    sf::Vector2f  GetPosition() const;
+    float         GetWidth()    const;
+    float         GetHeight()   const;
+    sf::Vector2f  GetSize()     const;
+    sf::FloatRect GetBounds()   const;
+
+    void Draw(sf::RenderWindow& window) const;
 
 protected:
+    sf::Sprite   m_Sprite;
     sf::Vector2f m_Position;
-    sf::Vector2f m_Size;
+    float        m_Width;
+    float        m_Height;
 
-    virtual void SyncShapePosition() = 0;
+    void ScaleToFit();
 };
 
 } // namespace Breakout

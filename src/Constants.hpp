@@ -30,4 +30,6 @@ constexpr float g_BrickGridLeftMargin =
 
 constexpr float g_MaxBounceAngle = 60.0f * 3.14159265f / 180.0f;
 
+constexpr char g_DataDirectory[] = "data";
+
 } // namespace Breakout

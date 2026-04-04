@@ -1,6 +1,8 @@
 #pragma once
 
 #include <vector>
+#include <span>
+
 #include "entities/Ball.hpp"
 #include "entities/Paddle.hpp"
 #include "entities/Brick.hpp"
@@ -20,13 +22,13 @@ struct Collision
 };
 
 public:
-    void Update(Ball& ball, Paddle& paddle, std::vector<Brick>& bricks) const;
+    void Update(std::span<Ball> balls, Paddle& paddle, std::vector<Brick>& bricks) const;
 
 private:
     void _clampPaddleToWindow(Paddle& paddle) const;
-    void _handleWallCollisions(Ball& ball) const;
-    void _handlePaddleCollision(Ball& ball, const Paddle& paddle) const;
-    void _handleBrickCollisions(Ball& ball, std::vector<Brick>& bricks) const;
+    void _handleWallCollisions(std::span<Ball> balls) const;
+    void _handlePaddleCollision(std::span<Ball> balls, const Paddle& paddle) const;
+    void _handleBrickCollisions(std::span<Ball> balls, std::vector<Brick>& bricks) const;
     auto _AABBCircleCollision(const sf::Vector2f& circlePos, float radius, const sf::Vector2f& rectPos, 
         const sf::Vector2f& rectSize) const -> Collision;
 };

@@ -27,14 +27,13 @@ sf::Color ColorFromHex(uint32_t hex)
 
 } // anonymous namespace
 
-Brick::Brick(sf::Vector2f position, sf::Vector2f size, int colorIndex)
-    : Actor(position, size)
+Brick::Brick(const sf::Texture& texture, sf::Vector2f position,
+             float width, float height, int colorIndex)
+    : Actor(texture, position, width, height)
     , m_IsAlive(true)
     , m_Color(ColorFromHex(g_RowColors[colorIndex % static_cast<int>(g_RowColors.size())]))
-    , m_Shape(m_Size)
 {
-    m_Shape.setPosition(m_Position);
-    m_Shape.setFillColor(m_Color);
+    m_Sprite.setColor(m_Color);
 }
 
 void Brick::OnHit()
@@ -50,21 +49,6 @@ bool Brick::IsAlive() const
 sf::Color Brick::GetColor() const
 {
     return m_Color;
-}
-
-sf::FloatRect Brick::GetBounds() const
-{
-    return m_Shape.getGlobalBounds();
-}
-
-void Brick::Draw(sf::RenderWindow& window) const
-{
-    window.draw(m_Shape);
-}
-
-void Brick::SyncShapePosition()
-{
-    m_Shape.setPosition(m_Position);
 }
 
 } // namespace Breakout

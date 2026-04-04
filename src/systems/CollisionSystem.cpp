@@ -9,13 +9,13 @@
 namespace Breakout
 {
 
-void CollisionSystem::Update(Ball& ball, Paddle& paddle,
+void CollisionSystem::Update(std::span<Ball> balls, Paddle& paddle,
                              std::vector<Brick>& bricks) const
 {
     _clampPaddleToWindow(paddle);
-    _handleWallCollisions(ball);
-    _handlePaddleCollision(ball, paddle);
-    _handleBrickCollisions(ball, bricks);
+    _handleWallCollisions(balls);
+    _handlePaddleCollision(balls, paddle);
+    _handleBrickCollisions(balls, bricks);
 }
 
 void CollisionSystem::_clampPaddleToWindow(Paddle& paddle) const
@@ -27,126 +27,135 @@ void CollisionSystem::_clampPaddleToWindow(Paddle& paddle) const
     paddle.SetPosition(pos);
 }
 
-void CollisionSystem::_handleWallCollisions(Ball& ball) const
+void CollisionSystem::_handleWallCollisions(std::span<Ball> balls) const
 {
-    auto pos = ball.GetPosition();
-    auto vel = ball.GetVelocity();
-    float r  = ball.GetRadius();
-    bool hit = false;
+    for (auto& ball : balls)
+    {
+        auto pos = ball.GetPosition();
+        auto vel = ball.GetVelocity();
+        float r  = ball.GetRadius();
+        bool hit = false;
 
-    if (pos.x - r <= 0.0f)
-    {
-        pos.x = r;
-        vel.x = std::abs(vel.x);
-        hit = true;
-    }
-    else if (pos.x + r >= g_WindowWidth)
-    {
-        pos.x = g_WindowWidth - r;
-        vel.x = -std::abs(vel.x);
-        hit = true;
-    }
+        if (pos.x - r <= 0.0f)
+        {
+            pos.x = r;
+            vel.x = std::abs(vel.x);
+            hit = true;
+        }
+        else if (pos.x + r >= g_WindowWidth)
+        {
+            pos.x = g_WindowWidth - r;
+            vel.x = -std::abs(vel.x);
+            hit = true;
+        }
 
-    if (pos.y - r <= 0.0f)
-    {
-        pos.y = r;
-        vel.y = std::abs(vel.y);
-        hit = true;
-    }
-    else if (pos.y + r >= g_WindowHeight)
-    {
+        if (pos.y - r <= 0.0f)
+        {
+            pos.y = r;
+            vel.y = std::abs(vel.y);
+            hit = true;
+        }
+        else if (pos.y + r >= g_WindowHeight)
+        {
+            ball.SetPosition(pos);
+            ball.SetVelocity(vel);
+            Game::Get()->GetEventBus().Publish(BallLostEvent{ball});
+            return;
+        }
+
         ball.SetPosition(pos);
         ball.SetVelocity(vel);
-        Game::Get()->GetEventBus().Publish(BallLostEvent{ball});
-        return;
+
+        if (hit)
+            Game::Get()->GetEventBus().Publish(BallHitWallEvent{ball});
     }
-
-    ball.SetPosition(pos);
-    ball.SetVelocity(vel);
-
-    if (hit)
-        Game::Get()->GetEventBus().Publish(BallHitWallEvent{ball});
 }
 
-void CollisionSystem::_handlePaddleCollision(Ball& ball, const Paddle& paddle) const
+void CollisionSystem::_handlePaddleCollision(std::span<Ball> balls, const Paddle& paddle) const
 {
-    auto ballPos = ball.GetPosition();
-    auto ballVel = ball.GetVelocity();
-    float r      = ball.GetRadius();
-
-    if (ballVel.y <= 0.0f)
-        return;
-
     auto paddlePos  = paddle.GetPosition();
     auto paddleSize = paddle.GetSize();
 
-    Collision collision = _AABBCircleCollision(ballPos, r, paddlePos, paddleSize);
-
-    if (!collision.Hit)
-        return;
-
-    float hitNormalized = (ballPos.x - paddlePos.x) / paddleSize.x;
-    hitNormalized = std::clamp(hitNormalized, 0.0f, 1.0f);
-
-    float angle = (hitNormalized - 0.5f) * 2.0f * g_MaxBounceAngle;
-
-    float speed = std::sqrt(ballVel.x * ballVel.x + ballVel.y * ballVel.y);
-    ballVel.x = speed * std::sin(angle);
-    ballVel.y = -speed * std::cos(angle);
-
-    ballPos.y = paddlePos.y - r;
-    ball.SetVelocity(ballVel);
-
-    Game::Get()->GetEventBus().Publish(BallHitPaddleEvent{ball, paddle});
-}
-
-void CollisionSystem::_handleBrickCollisions(Ball& ball, std::vector<Brick>& bricks) const
-{
-    auto ballPos = ball.GetPosition();
-    auto ballVel = ball.GetVelocity();
-    float r      = ball.GetRadius();
-
-    for (auto& brick : bricks)
+    for(auto& ball : balls)
     {
-        if (!brick.IsAlive())
-            continue;
+        auto ballPos = ball.GetPosition();
+        auto ballVel = ball.GetVelocity();
+        float r      = ball.GetRadius();
 
-        auto brickPos  = brick.GetPosition();
-        auto brickSize = brick.GetSize();
+        if (ballVel.y <= 0.0f)
+            return;
 
-        Collision collision = _AABBCircleCollision(ballPos, r, brickPos, brickSize);
+        Collision collision = _AABBCircleCollision(ballPos, r, paddlePos, paddleSize);
 
         if (!collision.Hit)
-            continue;
+            return;
 
-        brick.OnHit();
+        float hitNormalized = (ballPos.x - paddlePos.x) / paddleSize.x;
+        hitNormalized = std::clamp(hitNormalized, 0.0f, 1.0f);
 
-        float overlapLeft   = (ballPos.x + r) - brickPos.x;
-        float overlapRight  = (brickPos.x + brickSize.x) - (ballPos.x - r);
-        float overlapTop    = (ballPos.y + r) - brickPos.y;
-        float overlapBottom = (brickPos.y + brickSize.y) - (ballPos.y - r);
+        float angle = (hitNormalized - 0.5f) * 2.0f * g_MaxBounceAngle;
 
-        float minOverlapX = std::min(overlapLeft, overlapRight);
-        float minOverlapY = std::min(overlapTop, overlapBottom);
+        float speed = std::sqrt(ballVel.x * ballVel.x + ballVel.y * ballVel.y);
+        ballVel.x = speed * std::sin(angle);
+        ballVel.y = -speed * std::cos(angle);
 
-        if (minOverlapX < minOverlapY)
-        {
-            ballVel.x = -ballVel.x;
-            float offset = std::abs(collision.DiffVector.x - r);
-            ballPos.x += (overlapLeft < overlapRight) ? -offset : offset;
-        }
-        else
-        {
-            ballVel.y = -ballVel.y;
-            float offset = std::abs(collision.DiffVector.y - r);
-            ballPos.y += (overlapTop < overlapBottom) ? -offset : offset;
-        }
-
-        ball.SetPosition(ballPos);
+        ballPos.y = paddlePos.y - r;
         ball.SetVelocity(ballVel);
 
-        Game::Get()->GetEventBus().Publish(BallHitBrickEvent{ball, brick});
-        break;
+        Game::Get()->GetEventBus().Publish(BallHitPaddleEvent{ball, paddle});
+    }
+}
+
+void CollisionSystem::_handleBrickCollisions(std::span<Ball> balls, std::vector<Brick>& bricks) const
+{
+    for (auto& ball : balls)
+    {
+        auto ballPos = ball.GetPosition();
+        auto ballVel = ball.GetVelocity();
+        float r      = ball.GetRadius();
+
+        for (auto& brick : bricks)
+        {
+            if (!brick.IsAlive())
+                continue;
+
+            auto brickPos  = brick.GetPosition();
+            auto brickSize = brick.GetSize();
+
+            Collision collision = _AABBCircleCollision(ballPos, r, brickPos, brickSize);
+
+            if (!collision.Hit)
+                continue;
+
+            brick.OnHit();
+
+            float overlapLeft   = (ballPos.x + r) - brickPos.x;
+            float overlapRight  = (brickPos.x + brickSize.x) - (ballPos.x - r);
+            float overlapTop    = (ballPos.y + r) - brickPos.y;
+            float overlapBottom = (brickPos.y + brickSize.y) - (ballPos.y - r);
+
+            float minOverlapX = std::min(overlapLeft, overlapRight);
+            float minOverlapY = std::min(overlapTop, overlapBottom);
+
+            if (minOverlapX < minOverlapY)
+            {
+                ballVel.x = -ballVel.x;
+                float offset = std::abs(collision.DiffVector.x - r);
+                ballPos.x += (overlapLeft < overlapRight) ? -offset : offset;
+            }
+            else
+            {
+                ballVel.y = -ballVel.y;
+                float offset = std::abs(collision.DiffVector.y - r);
+                ballPos.y += (overlapTop < overlapBottom) ? -offset : offset;
+            }
+
+            ball.SetPosition(ballPos);
+            ball.SetVelocity(ballVel);
+
+            Game::Get()->GetEventBus().Publish(BallHitBrickEvent{ball, brick});
+            break;
+        }
     }
 }
 

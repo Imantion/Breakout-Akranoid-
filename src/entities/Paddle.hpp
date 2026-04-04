@@ -8,21 +8,14 @@ namespace Breakout
 class Paddle : public Actor
 {
 public:
-    Paddle(sf::Vector2f position, sf::Vector2f size);
+    Paddle(const sf::Texture& texture, sf::Vector2f position, float width, float height);
 
     void SetDirection(float direction);
 
-    float         GetDirection() const;
-    sf::FloatRect GetBounds()    const;
-
-    void Draw(sf::RenderWindow& window) const;
-
-protected:
-    void SyncShapePosition() override;
+    float GetDirection() const;
 
 private:
-    float              m_Direction;
-    sf::RectangleShape m_Shape;
+    float m_Direction;
 };
 
 } // namespace Breakout

@@ -2,8 +2,10 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <memory>
 
 #include "EventBus.hpp"
+#include "TextureManager.hpp"
 #include "entities/Paddle.hpp"
 #include "entities/Ball.hpp"
 #include "entities/Brick.hpp"
@@ -28,26 +30,27 @@ public:
 
     void Run();
 
-    EventBus& GetEventBus();
+    EventBus&       GetEventBus();
+    TextureManager& GetTextureManager();
 
 private:
     void _processInput();
     void _update(float dt);
-    // TODO(dkolomii): Actually use interpolation
     void _render(float interpolation);
 
     void _initBricks();
     void _subscribeEvents();
-    void _resetBall();
+    void _resetBall(Ball& ball);
 
     static Game*       s_Instance;
 
     sf::RenderWindow   m_Window;
     EventBus           m_EventBus;
+    TextureManager     m_TextureManager;
 
-    Paddle             m_Paddle;
-    Ball               m_Ball;
-    std::vector<Brick> m_Bricks;
+    std::unique_ptr<Paddle>  m_Paddle;
+    std::vector<Ball>        m_Balls;
+    std::vector<Brick>       m_Bricks;
 
     PaddleController   m_PaddleController;
     MovementSystem     m_MovementSystem;
