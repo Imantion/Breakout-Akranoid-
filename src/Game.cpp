@@ -75,6 +75,7 @@ void Game::Run()
             if (m_CurrentScene)
                 m_CurrentScene->OnExit();
 
+            m_EventBus.Clear();
             m_CurrentScene = std::move(m_PendingScene);
             m_CurrentScene->OnEnter();
         }
@@ -89,6 +90,7 @@ void Game::Run()
             while (accumulator >= g_FixedTimeStep)
             {
                 m_CurrentScene->Update(g_FixedTimeStep);
+                m_EventBus.FlushEvents();
                 accumulator -= g_FixedTimeStep;
             }
 

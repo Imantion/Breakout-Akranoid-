@@ -24,17 +24,42 @@ public:
     template<typename TEvent>
     void Publish(const TEvent& event)
     {
-        auto it = m_Subscribers.find(std::type_index(typeid(TEvent)));
-        if (it == m_Subscribers.end())
+        auto typeIdx = std::type_index(typeid(TEvent));
+        if (m_Subscribers.find(typeIdx) == m_Subscribers.end())
             return;
 
-        for (auto& callback : it->second)
-            callback(&event);
+        TEvent copy = event;
+        m_PendingEvents.push_back([this, copy, typeIdx]()
+        {
+            auto it = m_Subscribers.find(typeIdx);
+            if (it == m_Subscribers.end())
+                return;
+
+            for (auto& cb : it->second)
+                cb(&copy);
+        });
+    }
+
+    void FlushEvents()
+    {
+        while (!m_PendingEvents.empty())
+        {
+            auto batch = std::move(m_PendingEvents);
+            for (auto& fn : batch)
+                fn();
+        }
+    }
+
+    void Clear()
+    {
+        m_Subscribers.clear();
+        m_PendingEvents.clear();
     }
 
 private:
     std::unordered_map<std::type_index,
                        std::vector<std::function<void(const void*)>>> m_Subscribers;
+    std::vector<std::function<void()>> m_PendingEvents;
 };
 
 } // namespace Breakout

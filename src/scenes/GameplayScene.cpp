@@ -145,12 +145,16 @@ void GameplayScene::_initBricks()
 
 void GameplayScene::_subscribeEvents()
 {
+
+    // This events are fine. They won't cause crashes, even though we modify vectors
+    // EventBust dispatches them at the end of the frame, so we're safe.
     Game::Get()->GetEventBus().Subscribe<BallHitBrickEvent>(
         [this](const BallHitBrickEvent& event)
         {
             ++m_DestroyedInRow;
-            m_Score += m_DestroyedInRow >= g_DestroyedInRow ? g_ScorePerBrick + g_DestroyedInRowBonus : g_ScorePerBrick;
-            _updateHud();
+            m_Score += m_DestroyedInRow >= g_DestroyedInRow
+                ? g_ScorePerBrick + g_DestroyedInRowBonus
+                : g_ScorePerBrick;
 
             _spawnAbility(event.brick.GetPosition());
 
@@ -171,9 +175,8 @@ void GameplayScene::_subscribeEvents()
                 m_Balls.end());
                 return;
             }
-            
+
             m_Lives--;
-            _updateHud();
 
             if (m_Lives <= 0)
             {

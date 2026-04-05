@@ -31,6 +31,11 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     SFML::Window)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory_if_different
+        ${CMAKE_SOURCE_DIR}/data
+        $<TARGET_FILE_DIR:${PROJECT_NAME}>/data)
+
 if(WIN32)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}> $<TARGET_FILE_DIR:${PROJECT_NAME}>
