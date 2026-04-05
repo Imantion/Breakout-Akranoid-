@@ -38,6 +38,12 @@ constexpr int g_ScorePerBrick = 10;
 constexpr int g_DestroyedInRow = 3;
 constexpr int g_DestroyedInRowBonus = 20;
 
+constexpr float g_AbilitySize          = 20.0f;
+constexpr float g_AbilityFallSpeed     = 150.0f;
+constexpr float g_AbilitySpawnChance   = 0.2f;
+constexpr float g_WidePaddleDuration   = 8.0f;
+constexpr float g_WidePaddleMultiplier = 1.5f;
+
 constexpr float g_HudMargin   = 10.0f;
 constexpr unsigned int g_HudFontSize  = 20;
 constexpr unsigned int g_TitleFontSize = 64;

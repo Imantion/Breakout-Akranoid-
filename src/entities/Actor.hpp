@@ -19,6 +19,7 @@ public:
     virtual void OnHit() {}
 
     void          SetPosition(sf::Vector2f position);
+    void          SetWidth(float width);
     sf::Vector2f  GetPosition() const;
     float         GetWidth()    const;
     float         GetHeight()   const;

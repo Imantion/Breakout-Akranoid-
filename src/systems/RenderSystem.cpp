@@ -20,7 +20,7 @@ void RenderSystem::DrawActor(sf::RenderWindow& window, const Actor& actor)
     actor.Draw(window);
 }
 
-void RenderSystem::DrawBricks(sf::RenderWindow& window, const std::vector<Brick>& bricks)
+void RenderSystem::DrawBricks(sf::RenderWindow& window, const std::span<Brick> bricks)
 {
     if (bricks.empty())
         return;
@@ -30,11 +30,8 @@ void RenderSystem::DrawBricks(sf::RenderWindow& window, const std::vector<Brick>
     float tu = static_cast<float>(texSize.x);
     float tv = static_cast<float>(texSize.y);
 
-    int aliveCount = std::ranges::count_if(bricks, [](const Brick& b) { return b.IsAlive(); });
-    sf::VertexArray brickBatch{sf::PrimitiveType::Triangles};
-    brickBatch.resize(aliveCount * 6); // 6 vertices per brick
+    m_BrickBatch.clear();
 
-    int index = 0;
     for (const auto& brick : bricks)
     {
         if (!brick.IsAlive())
@@ -45,17 +42,17 @@ void RenderSystem::DrawBricks(sf::RenderWindow& window, const std::vector<Brick>
         float h    = brick.GetHeight();
         auto color = brick.GetColor();
 
-        brickBatch[index++] = sf::Vertex{.position = {pos.x,     pos.y},     .color = color, .texCoords = {0.0f, 0.0f}};
-        brickBatch[index++] = sf::Vertex{.position = {pos.x + w, pos.y},     .color = color, .texCoords = {tu,   0.0f}};
-        brickBatch[index++] = sf::Vertex{.position = {pos.x + w, pos.y + h}, .color = color, .texCoords = {tu,   tv}};
+        m_BrickBatch.append(sf::Vertex{.position = {pos.x,     pos.y},     .color = color, .texCoords = {0.0f, 0.0f}});
+        m_BrickBatch.append(sf::Vertex{.position = {pos.x + w, pos.y},     .color = color, .texCoords = {tu,   0.0f}});
+        m_BrickBatch.append(sf::Vertex{.position = {pos.x + w, pos.y + h}, .color = color, .texCoords = {tu,   tv}});
 
-        brickBatch[index++] = sf::Vertex{.position = {pos.x,     pos.y},     .color = color, .texCoords = {0.0f, 0.0f}};
-        brickBatch[index++] = sf::Vertex{.position = {pos.x + w, pos.y + h}, .color = color, .texCoords = {tu,   tv}};
-        brickBatch[index++] = sf::Vertex{.position = {pos.x,     pos.y + h}, .color = color, .texCoords = {0.0f, tv}};
+        m_BrickBatch.append(sf::Vertex{.position = {pos.x,     pos.y},     .color = color, .texCoords = {0.0f, 0.0f}});
+        m_BrickBatch.append(sf::Vertex{.position = {pos.x + w, pos.y + h}, .color = color, .texCoords = {tu,   tv}});
+        m_BrickBatch.append(sf::Vertex{.position = {pos.x,     pos.y + h}, .color = color, .texCoords = {0.0f, tv}});
     }
 
     sf::RenderStates states(&brickTex);
-    window.draw(brickBatch, states);
+    window.draw(m_BrickBatch, states);
 }
 
 void RenderSystem::DrawLabel(sf::RenderWindow& window, const Label& label)

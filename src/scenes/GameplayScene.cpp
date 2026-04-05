@@ -2,9 +2,13 @@
 #include "Game.hpp"
 #include "Constants.hpp"
 #include "Events.hpp"
+#include "GameplayContext.hpp"
 #include "scenes/MenuScene.hpp"
 #include "scenes/GameOverScene.hpp"
 #include "scenes/WinScene.hpp"
+#include "entities/abilities/MultiBallAbility.hpp"
+#include "entities/abilities/ExtraLifeAbility.hpp"
+#include "entities/abilities/WidePaddleAbility.hpp"
 
 #include <algorithm>
 #include <string>
@@ -21,6 +25,7 @@ GameplayScene::GameplayScene()
     , m_LivesLabel(Game::Get()->GetFont(),
                    "Lives: " + std::to_string(g_StartingLives), g_HudFontSize,
                    {0.0f, g_HudMargin})
+    , m_Rng(std::random_device{}())
 {
     auto& texMgr = Game::Get()->GetTextureManager();
 
@@ -70,8 +75,13 @@ void GameplayScene::ProcessInput(sf::RenderWindow& window)
 
 void GameplayScene::Update(float dt)
 {
-    m_MovementSystem.Update(*m_Paddle, m_Balls, dt);
-    m_CollisionSystem.Update(m_Balls, *m_Paddle, m_Bricks);
+    m_EffectManager.Update(dt);
+
+    m_MovementSystem.Update(*m_Paddle, m_Balls, m_Abilities, dt);
+    m_CollisionSystem.Update(m_Balls, *m_Paddle, m_Bricks, m_Abilities);
+
+    _updateHud();
+    _cleanupDeadAbilities();
 }
 
 void GameplayScene::Render(RenderSystem& renderer, sf::RenderWindow& window)
@@ -82,8 +92,34 @@ void GameplayScene::Render(RenderSystem& renderer, sf::RenderWindow& window)
     for (const auto& ball : m_Balls)
         renderer.DrawActor(window, ball);
 
+    for (const auto& ability : m_Abilities)
+    {
+        if (ability && ability->IsAlive())
+            renderer.DrawActor(window, *ability);
+    }
+
     renderer.DrawLabel(window, m_ScoreLabel);
     renderer.DrawLabel(window, m_LivesLabel);
+}
+
+void GameplayScene::AddBall(sf::Vector2f position, sf::Vector2f velocity)
+{
+    auto& texMgr = Game::Get()->GetTextureManager();
+    m_Balls.emplace_back(texMgr.GetTexture("ball"), position, g_BallRadius);
+    m_Balls.back().SetVelocity(velocity);
+}
+
+void GameplayScene::AddLife()
+{
+    m_Lives++;
+    _updateHud();
+}
+
+void GameplayScene::AddEffect(EffectType type, float duration,
+                              std::function<void()> onApply,
+                              std::function<void()> onExpire)
+{
+    m_EffectManager.PushEffect(type, duration, std::move(onApply), std::move(onExpire));
 }
 
 void GameplayScene::_initBricks()
@@ -110,11 +146,13 @@ void GameplayScene::_initBricks()
 void GameplayScene::_subscribeEvents()
 {
     Game::Get()->GetEventBus().Subscribe<BallHitBrickEvent>(
-        [this](const BallHitBrickEvent&)
+        [this](const BallHitBrickEvent& event)
         {
             ++m_DestroyedInRow;
             m_Score += m_DestroyedInRow >= g_DestroyedInRow ? g_ScorePerBrick + g_DestroyedInRowBonus : g_ScorePerBrick;
             _updateHud();
+
+            _spawnAbility(event.brick.GetPosition());
 
             bool allDestroyed = std::none_of(m_Bricks.begin(), m_Bricks.end(),
                 [](const Brick& b) { return b.IsAlive(); });
@@ -126,6 +164,14 @@ void GameplayScene::_subscribeEvents()
     Game::Get()->GetEventBus().Subscribe<BallLostEvent>(
         [this](const BallLostEvent& event)
         {
+            if (m_Balls.size() > 1)
+            {
+                m_Balls.erase(std::remove_if(m_Balls.begin(), m_Balls.end(),
+                    [&event](const Ball& ball) { return &ball == &event.ball; }),
+                m_Balls.end());
+                return;
+            }
+            
             m_Lives--;
             _updateHud();
 
@@ -144,6 +190,23 @@ void GameplayScene::_subscribeEvents()
         {
             m_DestroyedInRow = 0;
         });
+
+    Game::Get()->GetEventBus().Subscribe<AbilityPickedUpEvent>(
+        [this](const AbilityPickedUpEvent& event)
+        {
+            GameplayContext context{
+                .paddle = *m_Paddle,
+                .scene  = *this
+            };
+
+            event.ability.Apply(context);
+            event.ability.Kill();
+        });
+    Game::Get()->GetEventBus().Subscribe<AbilityFallOutOfBoundsEvent>(
+        [this](const AbilityFallOutOfBoundsEvent& event)
+        {
+            event.ability.Kill();
+        });
 }
 
 void GameplayScene::_resetBall(Ball& ball)
@@ -156,6 +219,41 @@ void GameplayScene::_updateHud()
 {
     m_ScoreLabel.SetText("Score: " + std::to_string(m_Score));
     m_LivesLabel.SetText("Lives: " + std::to_string(m_Lives));
+}
+
+void GameplayScene::_spawnAbility(sf::Vector2f position)
+{
+    std::uniform_real_distribution<float> chanceDist(0.0f, 1.0f);
+    if (chanceDist(m_Rng) > g_AbilitySpawnChance)
+        return;
+
+    auto& texMgr = Game::Get()->GetTextureManager();
+    std::uniform_int_distribution<int> typeDist(0, 2);
+    int type = typeDist(m_Rng);
+
+    switch (type)
+    {
+    case 0:
+        m_Abilities.push_back(std::make_unique<MultiBallAbility>(
+            texMgr.GetTexture("multi_ball"), position, g_AbilitySize));
+        break;
+    case 1:
+        m_Abilities.push_back(std::make_unique<ExtraLifeAbility>(
+            texMgr.GetTexture("hp"), position, g_AbilitySize));
+        break;
+    case 2:
+        m_Abilities.push_back(std::make_unique<WidePaddleAbility>(
+            texMgr.GetTexture("wide_paddle"), position, g_AbilitySize));
+        break;
+    }
+}
+
+void GameplayScene::_cleanupDeadAbilities()
+{
+    m_Abilities.erase(
+        std::remove_if(m_Abilities.begin(), m_Abilities.end(),
+            [](const std::unique_ptr<Ability>& a) { return !a || !a->IsAlive(); }),
+        m_Abilities.end());
 }
 
 } // namespace Breakout

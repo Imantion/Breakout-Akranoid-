@@ -4,13 +4,14 @@
 namespace Breakout
 {
 
-void MovementSystem::Update(Paddle& paddle, std::span<Ball> balls, float dt)
+void MovementSystem::Update(Paddle& paddle, std::span<Ball> balls,
+                            std::span<std::unique_ptr<Ability>> abilities, float dt)
 {
     auto paddlePos = paddle.GetPosition();
     paddlePos.x += paddle.GetDirection() * g_PaddleSpeed * dt;
     paddle.SetPosition(paddlePos);
 
-    for(Ball& ball : balls)
+    for (Ball& ball : balls)
     {
         sf::Vector2f ballPos = ball.GetPosition();
         sf::Vector2f ballVel = ball.GetVelocity();
@@ -18,7 +19,17 @@ void MovementSystem::Update(Paddle& paddle, std::span<Ball> balls, float dt)
         ballPos.y += ballVel.y * dt;
         ball.SetPosition(ballPos);
     }
-    
+
+    for (auto& ability : abilities)
+    {
+        if (!ability || !ability->IsAlive())
+            continue;
+        
+        sf::Vector2f pos = ability->GetPosition();
+        pos.y += g_AbilityFallSpeed * dt;
+        ability->SetPosition(pos);
+
+    }
 }
 
 } // namespace Breakout

@@ -6,6 +6,7 @@ namespace Breakout
 class Ball;
 class Paddle;
 class Brick;
+class Ability;
 
 struct BallHitWallEvent
 {
@@ -27,6 +28,16 @@ struct BallHitBrickEvent
 struct BallLostEvent
 {
     Ball& ball;
+};
+
+struct AbilityPickedUpEvent
+{
+    Ability& ability;
+};
+
+struct AbilityFallOutOfBoundsEvent
+{
+    Ability& ability;
 };
 
 } // namespace Breakout

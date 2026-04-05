@@ -10,12 +10,14 @@ namespace Breakout
 {
 
 void CollisionSystem::Update(std::span<Ball> balls, Paddle& paddle,
-                             std::vector<Brick>& bricks) const
+                             std::span<Brick> bricks,
+                             std::span<std::unique_ptr<Ability>> abilities) const
 {
     _clampPaddleToWindow(paddle);
     _handleWallCollisions(balls);
     _handlePaddleCollision(balls, paddle);
     _handleBrickCollisions(balls, bricks);
+    _handleAbilityCollisions(abilities, paddle);
 }
 
 void CollisionSystem::_clampPaddleToWindow(Paddle& paddle) const
@@ -76,7 +78,7 @@ void CollisionSystem::_handlePaddleCollision(std::span<Ball> balls, const Paddle
     auto paddlePos  = paddle.GetPosition();
     auto paddleSize = paddle.GetSize();
 
-    for(auto& ball : balls)
+    for (auto& ball : balls)
     {
         auto ballPos = ball.GetPosition();
         auto ballVel = ball.GetVelocity();
@@ -106,7 +108,7 @@ void CollisionSystem::_handlePaddleCollision(std::span<Ball> balls, const Paddle
     }
 }
 
-void CollisionSystem::_handleBrickCollisions(std::span<Ball> balls, std::vector<Brick>& bricks) const
+void CollisionSystem::_handleBrickCollisions(std::span<Ball> balls, std::span<Brick> bricks) const
 {
     for (auto& ball : balls)
     {
@@ -159,8 +161,43 @@ void CollisionSystem::_handleBrickCollisions(std::span<Ball> balls, std::vector<
     }
 }
 
-auto CollisionSystem::_AABBCircleCollision(const sf::Vector2f& circlePos, float radius, const sf::Vector2f& rectPos, 
-    const sf::Vector2f& rectSize) const -> Collision
+void CollisionSystem::_handleAbilityCollisions(std::span<std::unique_ptr<Ability>> abilities,
+                                               const Paddle& paddle) const
+{
+    auto paddlePos  = paddle.GetPosition();
+    auto paddleSize = paddle.GetSize();
+
+    for (auto& ability : abilities)
+    {
+        if (!ability || !ability->IsAlive())
+            continue;
+
+        auto abilityPos  = ability->GetPosition();
+        auto abilitySize = ability->GetSize();
+
+        if (_AABBOverlap(paddlePos, paddleSize, abilityPos, abilitySize))
+        {
+            Game::Get()->GetEventBus().Publish(AbilityPickedUpEvent{*ability});
+        }
+    }
+}
+
+void CollisionSystem::_handleAbilityBottomCollision(std::span<std::unique_ptr<Ability>> abilities) const
+{
+    for (auto& ability : abilities)
+    {
+        if (!ability || !ability->IsAlive())
+            continue;
+
+        auto pos = ability->GetPosition();
+
+        if (pos.y > g_WindowHeight)
+            Game::Get()->GetEventBus().Publish(AbilityFallOutOfBoundsEvent{*ability});
+    }
+}
+
+auto CollisionSystem::_AABBCircleCollision(const sf::Vector2f& circlePos, float radius,
+    const sf::Vector2f& rectPos, const sf::Vector2f& rectSize) const -> Collision
 {
     float closestX = std::clamp(circlePos.x, rectPos.x, rectPos.x + rectSize.x);
     float closestY = std::clamp(circlePos.y, rectPos.y, rectPos.y + rectSize.y);
@@ -169,10 +206,19 @@ auto CollisionSystem::_AABBCircleCollision(const sf::Vector2f& circlePos, float 
     float distY = circlePos.y - closestY;
 
     return Collision{
-        .Hit = distX * distX + distY * distY <= radius * radius, 
-        .ClosestPoint = sf::Vector2f(closestX, closestY), 
+        .Hit = distX * distX + distY * distY <= radius * radius,
+        .ClosestPoint = sf::Vector2f(closestX, closestY),
         .DiffVector = sf::Vector2f(distX, distY)
     };
+}
+
+bool CollisionSystem::_AABBOverlap(const sf::Vector2f& posA, const sf::Vector2f& sizeA,
+                                   const sf::Vector2f& posB, const sf::Vector2f& sizeB) const
+{
+    return posA.x < posB.x + sizeB.x &&
+           posA.x + sizeA.x > posB.x &&
+           posA.y < posB.y + sizeB.y &&
+           posA.y + sizeA.y > posB.y;
 }
 
 } // namespace Breakout

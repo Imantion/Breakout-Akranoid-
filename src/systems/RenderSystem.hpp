@@ -19,9 +19,12 @@ public:
     void EndFrame(sf::RenderWindow& window);
 
     void DrawActor(sf::RenderWindow& window, const Actor& actor);
-    void DrawBricks(sf::RenderWindow& window, const std::vector<Brick>& bricks);
+    void DrawBricks(sf::RenderWindow& window, const std::span<Brick> bricks);
     void DrawLabel(sf::RenderWindow& window, const Label& label);
     void DrawButton(sf::RenderWindow& window, const Button& button);
+
+private:
+    sf::VertexArray m_BrickBatch{sf::PrimitiveType::Triangles};
 };
 
 } // namespace Breakout

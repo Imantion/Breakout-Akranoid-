@@ -19,6 +19,12 @@ void Actor::SetPosition(sf::Vector2f position)
     m_Sprite.setPosition(m_Position);
 }
 
+void Actor::SetWidth(float width)
+{
+    m_Width = width;
+    ScaleToFit();
+}
+
 sf::Vector2f Actor::GetPosition() const
 {
     return m_Position;
