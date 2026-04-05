@@ -48,6 +48,11 @@ TextureManager& Game::GetTextureManager()
     return m_TextureManager;
 }
 
+RenderSystem& Game::GetRenderSystem()
+{
+    return m_RenderSystem;
+}
+
 const sf::Font& Game::GetFont() const
 {
     return m_Font;
@@ -87,7 +92,9 @@ void Game::Run()
                 accumulator -= g_FixedTimeStep;
             }
 
-            m_CurrentScene->Render(m_Window);
+            m_RenderSystem.BeginFrame(m_Window);
+            m_CurrentScene->Render(m_RenderSystem, m_Window);
+            m_RenderSystem.EndFrame(m_Window);
         }
     }
 }

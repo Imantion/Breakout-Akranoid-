@@ -39,6 +39,11 @@ sf::Vector2f Actor::GetSize() const
     return {m_Width, m_Height};
 }
 
+const sf::Sprite& Actor::GetSprite() const
+{
+    return m_Sprite;
+}
+
 sf::FloatRect Actor::GetBounds() const
 {
     return m_Sprite.getGlobalBounds();

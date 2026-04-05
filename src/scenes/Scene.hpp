@@ -5,6 +5,8 @@
 namespace Breakout
 {
 
+class RenderSystem;
+
 class Scene
 {
 public:
@@ -15,7 +17,7 @@ public:
 
     virtual void ProcessInput(sf::RenderWindow& window) = 0;
     virtual void Update(float dt) = 0;
-    virtual void Render(sf::RenderWindow& window) = 0;
+    virtual void Render(RenderSystem& renderer, sf::RenderWindow& window) = 0;
 };
 
 } // namespace Breakout

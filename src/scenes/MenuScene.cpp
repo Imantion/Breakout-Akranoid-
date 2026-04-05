@@ -49,16 +49,12 @@ void MenuScene::Update([[maybe_unused]] float dt)
         button.Update(window);
 }
 
-void MenuScene::Render(sf::RenderWindow& window)
+void MenuScene::Render(RenderSystem& renderer, sf::RenderWindow& window)
 {
-    window.clear(sf::Color(30, 30, 46));
-
-    m_Title.Draw(window);
+    renderer.DrawLabel(window, m_Title);
 
     for (auto& button : m_Buttons)
-        button.Draw(window);
-
-    window.display();
+        renderer.DrawButton(window, button);
 }
 
 } // namespace Breakout

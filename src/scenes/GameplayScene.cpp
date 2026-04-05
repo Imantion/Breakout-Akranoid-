@@ -15,12 +15,12 @@ namespace Breakout
 GameplayScene::GameplayScene()
     : m_Score(0)
     , m_Lives(g_StartingLives)
+    , m_DestroyedInRow(0)
     , m_ScoreLabel(Game::Get()->GetFont(), "Score: 0", g_HudFontSize,
                    {g_HudMargin, g_HudMargin})
     , m_LivesLabel(Game::Get()->GetFont(),
                    "Lives: " + std::to_string(g_StartingLives), g_HudFontSize,
-                   {0.0f, g_HudMargin}),
-    m_DestroyedInRow(0)
+                   {0.0f, g_HudMargin})
 {
     auto& texMgr = Game::Get()->GetTextureManager();
 
@@ -74,16 +74,16 @@ void GameplayScene::Update(float dt)
     m_CollisionSystem.Update(m_Balls, *m_Paddle, m_Bricks);
 }
 
-void GameplayScene::Render(sf::RenderWindow& window)
+void GameplayScene::Render(RenderSystem& renderer, sf::RenderWindow& window)
 {
-    window.clear(sf::Color(30, 30, 46));
+    renderer.DrawBricks(window, m_Bricks);
+    renderer.DrawActor(window, *m_Paddle);
 
-    m_RenderSystem.Render(window, *m_Paddle, m_Balls, m_Bricks);
+    for (const auto& ball : m_Balls)
+        renderer.DrawActor(window, ball);
 
-    m_ScoreLabel.Draw(window);
-    m_LivesLabel.Draw(window);
-
-    window.display();
+    renderer.DrawLabel(window, m_ScoreLabel);
+    renderer.DrawLabel(window, m_LivesLabel);
 }
 
 void GameplayScene::_initBricks()

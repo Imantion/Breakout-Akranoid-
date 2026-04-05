@@ -8,7 +8,6 @@
 #include "systems/PaddleController.hpp"
 #include "systems/MovementSystem.hpp"
 #include "systems/CollisionSystem.hpp"
-#include "systems/RenderSystem.hpp"
 
 #include <memory>
 #include <vector>
@@ -26,7 +25,7 @@ public:
 
     void ProcessInput(sf::RenderWindow& window) override;
     void Update(float dt) override;
-    void Render(sf::RenderWindow& window) override;
+    void Render(RenderSystem& renderer, sf::RenderWindow& window) override;
 
 private:
     void _initBricks();
@@ -41,7 +40,6 @@ private:
     PaddleController   m_PaddleController;
     MovementSystem     m_MovementSystem;
     CollisionSystem    m_CollisionSystem;
-    RenderSystem       m_RenderSystem;
 
     int      m_Score;
     int      m_Lives;

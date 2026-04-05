@@ -1,12 +1,13 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <vector>
 #include <span>
+#include <vector>
 
-#include "entities/Paddle.hpp"
-#include "entities/Ball.hpp"
+#include "entities/Actor.hpp"
 #include "entities/Brick.hpp"
+#include "ui/Label.hpp"
+#include "ui/Button.hpp"
 
 namespace Breakout
 {
@@ -14,10 +15,13 @@ namespace Breakout
 class RenderSystem
 {
 public:
-    void Render(sf::RenderWindow& window,
-                const Paddle& paddle,
-                const std::span<Ball> balls,
-                const std::vector<Brick>& bricks) const;
+    void BeginFrame(sf::RenderWindow& window);
+    void EndFrame(sf::RenderWindow& window);
+
+    void DrawActor(sf::RenderWindow& window, const Actor& actor);
+    void DrawBricks(sf::RenderWindow& window, const std::vector<Brick>& bricks);
+    void DrawLabel(sf::RenderWindow& window, const Label& label);
+    void DrawButton(sf::RenderWindow& window, const Button& button);
 };
 
 } // namespace Breakout

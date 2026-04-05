@@ -25,6 +25,8 @@ public:
     sf::Vector2f  GetSize()     const;
     sf::FloatRect GetBounds()   const;
 
+    const sf::Sprite& GetSprite() const;
+
     void Draw(sf::RenderWindow& window) const;
 
 protected:

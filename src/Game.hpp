@@ -5,6 +5,7 @@
 
 #include "EventBus.hpp"
 #include "TextureManager.hpp"
+#include "systems/RenderSystem.hpp"
 
 namespace Breakout
 {
@@ -27,6 +28,7 @@ public:
 
     EventBus&          GetEventBus();
     TextureManager&    GetTextureManager();
+    RenderSystem&      GetRenderSystem();
     const sf::Font&    GetFont() const;
     sf::RenderWindow&  GetWindow();
 
@@ -37,6 +39,7 @@ private:
     sf::Font                  m_Font;
     EventBus                  m_EventBus;
     TextureManager            m_TextureManager;
+    RenderSystem              m_RenderSystem;
 
     std::unique_ptr<Scene>    m_CurrentScene;
     std::unique_ptr<Scene>    m_PendingScene;

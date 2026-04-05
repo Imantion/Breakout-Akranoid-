@@ -55,17 +55,13 @@ void GameOverScene::Update([[maybe_unused]] float dt)
         button.Update(window);
 }
 
-void GameOverScene::Render(sf::RenderWindow& window)
+void GameOverScene::Render(RenderSystem& renderer, sf::RenderWindow& window)
 {
-    window.clear(sf::Color(30, 30, 46));
-
-    m_Title.Draw(window);
-    m_ScoreLabel.Draw(window);
+    renderer.DrawLabel(window, m_Title);
+    renderer.DrawLabel(window, m_ScoreLabel);
 
     for (auto& button : m_Buttons)
-        button.Draw(window);
-
-    window.display();
+        renderer.DrawButton(window, button);
 }
 
 } // namespace Breakout
