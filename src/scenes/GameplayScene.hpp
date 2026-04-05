@@ -2,6 +2,7 @@
 
 #include "Scene.hpp"
 #include "ui/Label.hpp"
+#include "ui/AimLine.hpp"
 #include "entities/Paddle.hpp"
 #include "entities/Ball.hpp"
 #include "entities/Brick.hpp"
@@ -42,8 +43,11 @@ private:
     void _subscribeEvents();
     void _resetBall(Ball& ball);
     void _updateHud();
+    void _handleAim();
     void _spawnAbility(sf::Vector2f position);
     void _cleanupDeadAbilities();
+    void _launchAttachedBall(const sf::RenderWindow& window, sf::Vector2i mousePixel);
+    Ball* _findAttachedBall();
 
     std::unique_ptr<Paddle>                   m_Paddle;
     std::vector<Ball>                         m_Balls;
@@ -61,6 +65,7 @@ private:
     Label    m_ScoreLabel;
     Label    m_LivesLabel;
 
+    AimLine      m_AimLine;
     std::mt19937 m_Rng;
 };
 

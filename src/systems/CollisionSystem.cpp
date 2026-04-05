@@ -33,6 +33,9 @@ void CollisionSystem::_handleWallCollisions(std::span<Ball> balls) const
 {
     for (auto& ball : balls)
     {
+        if (ball.IsAttached())
+            continue;
+
         auto pos = ball.GetPosition();
         auto vel = ball.GetVelocity();
         float r  = ball.GetRadius();
@@ -80,6 +83,9 @@ void CollisionSystem::_handlePaddleCollision(std::span<Ball> balls, const Paddle
 
     for (auto& ball : balls)
     {
+        if (ball.IsAttached())
+            continue;
+
         auto ballPos = ball.GetPosition();
         auto ballVel = ball.GetVelocity();
         float r      = ball.GetRadius();
@@ -112,6 +118,9 @@ void CollisionSystem::_handleBrickCollisions(std::span<Ball> balls, std::span<Br
 {
     for (auto& ball : balls)
     {
+        if (ball.IsAttached())
+            continue;
+
         auto ballPos = ball.GetPosition();
         auto ballVel = ball.GetVelocity();
         float r      = ball.GetRadius();

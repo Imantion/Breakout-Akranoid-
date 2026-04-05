@@ -17,7 +17,7 @@ void RenderSystem::EndFrame(sf::RenderWindow& window)
 
 void RenderSystem::DrawActor(sf::RenderWindow& window, const Actor& actor)
 {
-    actor.Draw(window);
+    window.draw(actor.GetSprite());
 }
 
 void RenderSystem::DrawBricks(sf::RenderWindow& window, const std::span<Brick> bricks)
@@ -63,6 +63,12 @@ void RenderSystem::DrawLabel(sf::RenderWindow& window, const Label& label)
 void RenderSystem::DrawButton(sf::RenderWindow& window, const Button& button)
 {
     button.Draw(window);
+}
+
+void RenderSystem::DrawAimLine(sf::RenderWindow& window, const AimLine& aimLine)
+{
+    if (aimLine.IsVisible())
+        window.draw(aimLine.GetLine());
 }
 
 } // namespace Breakout

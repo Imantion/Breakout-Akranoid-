@@ -11,6 +11,7 @@
 #include "entities/abilities/WidePaddleAbility.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <string>
 
 namespace Breakout
@@ -68,6 +69,12 @@ void GameplayScene::ProcessInput(sf::RenderWindow& window)
             if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
                 Game::Get()->SetScene(std::make_unique<MenuScene>());
         }
+
+        if (const auto* mouseClick = event->getIf<sf::Event::MouseButtonPressed>())
+        {
+            if (mouseClick->button == sf::Mouse::Button::Left)
+                _launchAttachedBall(window, mouseClick->position);
+        }
     }
 
     m_PaddleController.Update(*m_Paddle);
@@ -80,6 +87,7 @@ void GameplayScene::Update(float dt)
     m_MovementSystem.Update(*m_Paddle, m_Balls, m_Abilities, dt);
     m_CollisionSystem.Update(m_Balls, *m_Paddle, m_Bricks, m_Abilities);
 
+    _handleAim();
     _updateHud();
     _cleanupDeadAbilities();
 }
@@ -97,6 +105,8 @@ void GameplayScene::Render(RenderSystem& renderer, sf::RenderWindow& window)
         if (ability && ability->IsAlive())
             renderer.DrawActor(window, *ability);
     }
+
+    renderer.DrawAimLine(window, m_AimLine);
 
     renderer.DrawLabel(window, m_ScoreLabel);
     renderer.DrawLabel(window, m_LivesLabel);
@@ -214,14 +224,31 @@ void GameplayScene::_subscribeEvents()
 
 void GameplayScene::_resetBall(Ball& ball)
 {
-    ball.SetPosition({g_WindowWidth / 2.0f, g_WindowHeight / 2.0f});
-    ball.SetVelocity({g_BallSpeed * 0.7f, -g_BallSpeed * 0.7f});
+    m_AimLine.SetVisibility(true);
+    ball.SetVelocity({0.0f, 0.0f});
+    ball.SetState(BallState::Attached);
 }
 
 void GameplayScene::_updateHud()
 {
     m_ScoreLabel.SetText("Score: " + std::to_string(m_Score));
     m_LivesLabel.SetText("Lives: " + std::to_string(m_Lives));
+}
+
+void GameplayScene::_handleAim()
+{
+    if (!m_AimLine.IsVisible())
+        return;
+
+    auto* attachedBall = _findAttachedBall();
+    if (!attachedBall)
+        return;
+
+    auto& window = Game::Get()->GetWindow();
+    auto mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+    sf::Vector2f ballCenter = attachedBall->GetPosition();
+    ballCenter.x += attachedBall->GetWidth() * 0.5f;
+    m_AimLine.Update(ballCenter, mousePos);
 }
 
 void GameplayScene::_spawnAbility(sf::Vector2f position)
@@ -257,6 +284,36 @@ void GameplayScene::_cleanupDeadAbilities()
         std::remove_if(m_Abilities.begin(), m_Abilities.end(),
             [](const std::unique_ptr<Ability>& a) { return !a || !a->IsAlive(); }),
         m_Abilities.end());
+}
+
+void GameplayScene::_launchAttachedBall(const sf::RenderWindow& window, sf::Vector2i mousePixel)
+{
+    Ball* ball = _findAttachedBall();
+    if (!ball)
+        return;
+
+    auto mousePos = window.mapPixelToCoords(mousePixel);
+    auto ballPos  = ball->GetPosition();
+    sf::Vector2f dir = mousePos - ballPos;
+    float length = std::sqrt(dir.x * dir.x + dir.y * dir.y);
+
+    if (length < 1.0f)
+        return;
+
+    dir /= length;
+    ball->SetVelocity(dir * g_BallSpeed);
+    ball->SetState(BallState::Free);
+    m_AimLine.SetVisibility(false);
+}
+
+Ball* GameplayScene::_findAttachedBall()
+{
+    for (auto& ball : m_Balls)
+    {
+        if (ball.IsAttached())
+            return &ball;
+    }
+    return nullptr;
 }
 
 } // namespace Breakout

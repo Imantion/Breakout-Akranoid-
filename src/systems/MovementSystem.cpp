@@ -13,6 +13,14 @@ void MovementSystem::Update(Paddle& paddle, std::span<Ball> balls,
 
     for (Ball& ball : balls)
     {
+        if (ball.IsAttached())
+        {
+            float ballX = paddle.GetPosition().x + paddle.GetWidth() / 2.0f;
+            float ballY = paddle.GetPosition().y - ball.GetRadius();
+            ball.SetPosition({ballX, ballY});
+            continue;
+        }
+
         sf::Vector2f ballPos = ball.GetPosition();
         sf::Vector2f ballVel = ball.GetVelocity();
         ballPos.x += ballVel.x * dt;
@@ -24,11 +32,10 @@ void MovementSystem::Update(Paddle& paddle, std::span<Ball> balls,
     {
         if (!ability || !ability->IsAlive())
             continue;
-        
+
         sf::Vector2f pos = ability->GetPosition();
         pos.y += g_AbilityFallSpeed * dt;
         ability->SetPosition(pos);
-
     }
 }
 

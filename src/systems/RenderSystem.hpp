@@ -8,6 +8,7 @@
 #include "entities/Brick.hpp"
 #include "ui/Label.hpp"
 #include "ui/Button.hpp"
+#include "ui/AimLine.hpp"
 
 namespace Breakout
 {
@@ -22,6 +23,7 @@ public:
     void DrawBricks(sf::RenderWindow& window, const std::span<Brick> bricks);
     void DrawLabel(sf::RenderWindow& window, const Label& label);
     void DrawButton(sf::RenderWindow& window, const Button& button);
+    void DrawAimLine(sf::RenderWindow& window, const AimLine& aimLine);
 
 private:
     sf::VertexArray m_BrickBatch{sf::PrimitiveType::Triangles};
