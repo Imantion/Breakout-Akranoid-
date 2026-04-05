@@ -83,12 +83,12 @@ void CollisionSystem::_handlePaddleCollision(std::span<Ball> balls, const Paddle
         float r      = ball.GetRadius();
 
         if (ballVel.y <= 0.0f)
-            return;
+            continue;
 
         Collision collision = _AABBCircleCollision(ballPos, r, paddlePos, paddleSize);
 
         if (!collision.Hit)
-            return;
+            continue;
 
         float hitNormalized = (ballPos.x - paddlePos.x) / paddleSize.x;
         hitNormalized = std::clamp(hitNormalized, 0.0f, 1.0f);

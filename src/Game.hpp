@@ -1,21 +1,15 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include <vector>
 #include <memory>
 
 #include "EventBus.hpp"
 #include "TextureManager.hpp"
-#include "entities/Paddle.hpp"
-#include "entities/Ball.hpp"
-#include "entities/Brick.hpp"
-#include "systems/PaddleController.hpp"
-#include "systems/MovementSystem.hpp"
-#include "systems/CollisionSystem.hpp"
-#include "systems/RenderSystem.hpp"
 
 namespace Breakout
 {
+
+class Scene;
 
 class Game
 {
@@ -29,33 +23,23 @@ public:
     static Game* Get();
 
     void Run();
+    void SetScene(std::unique_ptr<Scene> scene);
 
-    EventBus&       GetEventBus();
-    TextureManager& GetTextureManager();
+    EventBus&          GetEventBus();
+    TextureManager&    GetTextureManager();
+    const sf::Font&    GetFont() const;
+    sf::RenderWindow&  GetWindow();
 
 private:
-    void _processInput();
-    void _update(float dt);
-    void _render(float interpolation);
+    static Game*              s_Instance;
 
-    void _initBricks();
-    void _subscribeEvents();
-    void _resetBall(Ball& ball);
+    sf::RenderWindow          m_Window;
+    sf::Font                  m_Font;
+    EventBus                  m_EventBus;
+    TextureManager            m_TextureManager;
 
-    static Game*       s_Instance;
-
-    sf::RenderWindow   m_Window;
-    EventBus           m_EventBus;
-    TextureManager     m_TextureManager;
-
-    std::unique_ptr<Paddle>  m_Paddle;
-    std::vector<Ball>        m_Balls;
-    std::vector<Brick>       m_Bricks;
-
-    PaddleController   m_PaddleController;
-    MovementSystem     m_MovementSystem;
-    CollisionSystem    m_CollisionSystem;
-    RenderSystem       m_RenderSystem;
+    std::unique_ptr<Scene>    m_CurrentScene;
+    std::unique_ptr<Scene>    m_PendingScene;
 };
 
 } // namespace Breakout

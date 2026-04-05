@@ -1,0 +1,64 @@
+#include "MenuScene.hpp"
+#include "Game.hpp"
+#include "Constants.hpp"
+#include "scenes/GameplayScene.hpp"
+
+namespace Breakout
+{
+
+MenuScene::MenuScene()
+    : m_Title(Game::Get()->GetFont(), "BREAKOUT", g_TitleFontSize,
+              {0.0f, g_WindowHeight * 0.2f}, sf::Color(255, 200, 60))
+{
+    m_Title.CenterHorizontally(g_WindowWidth);
+
+    m_Buttons.emplace_back(Game::Get()->GetFont(), "Play", g_MenuFontSize,
+                           sf::Vector2f{0.0f, g_WindowHeight * 0.5f},
+                           []() { Game::Get()->SetScene(std::make_unique<GameplayScene>()); });
+
+    m_Buttons.emplace_back(Game::Get()->GetFont(), "Quit", g_MenuFontSize,
+                           sf::Vector2f{0.0f, g_WindowHeight * 0.6f},
+                           []() { Game::Get()->GetWindow().close(); });
+
+    for (auto& button : m_Buttons)
+        button.CenterHorizontally(g_WindowWidth);
+}
+
+void MenuScene::ProcessInput(sf::RenderWindow& window)
+{
+    while (const auto event = window.pollEvent())
+    {
+        if (event->is<sf::Event::Closed>())
+            window.close();
+
+        if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
+        {
+            if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
+                window.close();
+        }
+
+        for (auto& button : m_Buttons)
+            button.HandleEvent(*event, window);
+    }
+}
+
+void MenuScene::Update([[maybe_unused]] float dt)
+{
+    auto& window = Game::Get()->GetWindow();
+    for (auto& button : m_Buttons)
+        button.Update(window);
+}
+
+void MenuScene::Render(sf::RenderWindow& window)
+{
+    window.clear(sf::Color(30, 30, 46));
+
+    m_Title.Draw(window);
+
+    for (auto& button : m_Buttons)
+        button.Draw(window);
+
+    window.display();
+}
+
+} // namespace Breakout

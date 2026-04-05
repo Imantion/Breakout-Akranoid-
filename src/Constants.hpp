@@ -31,5 +31,16 @@ constexpr float g_BrickGridLeftMargin =
 constexpr float g_MaxBounceAngle = 60.0f * 3.14159265f / 180.0f;
 
 constexpr char g_DataDirectory[] = "data";
+constexpr char g_FontFile[]      = "data/font.ttf";
+
+constexpr int g_StartingLives = 3;
+constexpr int g_ScorePerBrick = 10;
+constexpr int g_DestroyedInRow = 3;
+constexpr int g_DestroyedInRowBonus = 20;
+
+constexpr float g_HudMargin   = 10.0f;
+constexpr unsigned int g_HudFontSize  = 20;
+constexpr unsigned int g_TitleFontSize = 64;
+constexpr unsigned int g_MenuFontSize  = 32;
 
 } // namespace Breakout
