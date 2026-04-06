@@ -1,7 +1,8 @@
 #include "MenuScene.hpp"
 #include "core/Game.hpp"
 #include "core/Constants.hpp"
-#include "GameplayScene.hpp"
+
+#include <string>
 
 namespace Breakout
 {
@@ -9,12 +10,16 @@ namespace Breakout
 MenuScene::MenuScene()
     : m_Title(Game::Get()->GetFont(), "BREAKOUT", g_TitleFontSize,
               {0.0f, g_WindowHeight * 0.2f}, sf::Color(255, 200, 60))
+    , m_TotalScoreLabel(Game::Get()->GetFont(),
+                       "Total Score: " + std::to_string(Game::Get()->GetScoreManager().GetTotalScore()),
+                       g_HudFontSize, {0.0f, g_WindowHeight * 0.38f}, sf::Color(180, 180, 180))
 {
     m_Title.CenterHorizontally(g_WindowWidth);
+    m_TotalScoreLabel.CenterHorizontally(g_WindowWidth);
 
     m_Buttons.emplace_back(Game::Get()->GetFont(), "Play", g_MenuFontSize,
                            sf::Vector2f{0.0f, g_WindowHeight * 0.5f},
-                           []() { Game::Get()->SetScene(std::make_unique<GameplayScene>()); });
+                           []() { Game::Get()->StartCampaign(); });
 
     m_Buttons.emplace_back(Game::Get()->GetFont(), "Quit", g_MenuFontSize,
                            sf::Vector2f{0.0f, g_WindowHeight * 0.6f},
@@ -52,6 +57,7 @@ void MenuScene::Update([[maybe_unused]] float dt)
 void MenuScene::Render(RenderSystem& renderer, sf::RenderWindow& window)
 {
     renderer.DrawLabel(window, m_Title);
+    renderer.DrawLabel(window, m_TotalScoreLabel);
 
     for (auto& button : m_Buttons)
         renderer.DrawButton(window, button);

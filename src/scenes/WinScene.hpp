@@ -22,6 +22,7 @@ public:
 private:
     Label                m_Title;
     Label                m_ScoreLabel;
+    Label                m_TotalScoreLabel;
     std::vector<Button>  m_Buttons;
 };
 

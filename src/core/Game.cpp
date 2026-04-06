@@ -2,6 +2,10 @@
 #include "core/Constants.hpp"
 #include "scenes/Scene.hpp"
 #include "scenes/MenuScene.hpp"
+#include "scenes/GameplayScene.hpp"
+#include "scenes/LevelCompleteScene.hpp"
+#include "scenes/GameOverScene.hpp"
+#include "scenes/WinScene.hpp"
 
 namespace Breakout
 {
@@ -15,6 +19,8 @@ Game::Game()
     s_Instance = this;
     m_Window.setFramerateLimit(0);
     m_TextureManager.LoadAll(g_DataDirectory);
+    m_LevelLoader.LoadCampaign(g_CampaignFile);
+    m_ScoreManager.Load(g_ScoresFile);
 
     SetScene(std::make_unique<MenuScene>());
 }
@@ -38,6 +44,45 @@ void Game::SetScene(std::unique_ptr<Scene> scene)
     m_PendingScene = std::move(scene);
 }
 
+void Game::StartCampaign()
+{
+    m_Session = GameSession{};
+    auto bricks = m_LevelLoader.LoadLevel(0);
+    SetScene(std::make_unique<GameplayScene>(std::move(bricks)));
+}
+
+void Game::OnLevelComplete(int score)
+{
+    m_Session.score = score;
+
+    m_ScoreManager.AddScore(m_Session.currentLevelIndex, "Player", score);
+    m_ScoreManager.Save(g_ScoresFile);
+
+    if (m_LevelLoader.HasNextLevel(m_Session.currentLevelIndex))
+    {
+        SetScene(std::make_unique<LevelCompleteScene>(score));
+    }
+    else
+    {
+        SetScene(std::make_unique<WinScene>(score));
+    }
+}
+
+void Game::OnGameOver(int score)
+{
+    m_Session.score = score;
+    m_ScoreManager.AddScore(m_Session.currentLevelIndex, "Player", score);
+    m_ScoreManager.Save(g_ScoresFile);
+    SetScene(std::make_unique<GameOverScene>(score));
+}
+
+void Game::LoadNextLevel()
+{
+    m_Session.currentLevelIndex++;
+    auto bricks = m_LevelLoader.LoadLevel(m_Session.currentLevelIndex);
+    SetScene(std::make_unique<GameplayScene>(std::move(bricks)));
+}
+
 EventBus& Game::GetEventBus()
 {
     return m_EventBus;
@@ -48,9 +93,19 @@ TextureManager& Game::GetTextureManager()
     return m_TextureManager;
 }
 
+ScoreManager& Game::GetScoreManager()
+{
+    return m_ScoreManager;
+}
+
 RenderSystem& Game::GetRenderSystem()
 {
     return m_RenderSystem;
+}
+
+const GameSession& Game::GetSession() const
+{
+    return m_Session;
 }
 
 const sf::Font& Game::GetFont() const

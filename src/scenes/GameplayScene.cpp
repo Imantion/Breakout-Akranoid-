@@ -4,9 +4,6 @@
 #include "events/Events.hpp"
 #include "core/GameplayContext.hpp"
 #include "scenes/MenuScene.hpp"
-#include "GameOverScene.hpp"
-#include "WinScene.hpp"
-#include "entities/BrickFactory.hpp"
 #include "entities/AbilityFactory.hpp"
 
 #include <algorithm>
@@ -16,8 +13,8 @@
 namespace Breakout
 {
 
-GameplayScene::GameplayScene()
-    : m_CurrentLevelIndex(0)
+GameplayScene::GameplayScene(std::vector<std::unique_ptr<Brick>> bricks)
+    : m_Bricks(std::move(bricks))
     , m_Score(0)
     , m_Lives(g_StartingLives)
     , m_DestroyedInRow(0)
@@ -28,8 +25,6 @@ GameplayScene::GameplayScene()
                    {0.0f, g_HudMargin})
     , m_Rng(std::random_device{}())
 {
-    m_LevelLoader.LoadCampaign(g_CampaignFile);
-
     auto& texMgr = Game::Get()->GetTextureManager();
 
     m_Paddle = std::make_unique<Paddle>(
@@ -44,7 +39,6 @@ GameplayScene::GameplayScene()
         g_BallRadius);
 
     _resetBall(m_Balls.back());
-    _loadLevel();
 
     float livesX = g_WindowWidth - g_HudMargin - 120.0f;
     m_LivesLabel.SetPosition({livesX, g_HudMargin});
@@ -134,37 +128,6 @@ void GameplayScene::AddEffect(EffectType type, float duration,
     m_EffectManager.PushEffect(type, duration, std::move(onApply), std::move(onExpire));
 }
 
-void GameplayScene::_loadLevel()
-{
-    m_Bricks = m_LevelLoader.LoadLevel(m_CurrentLevelIndex);
-}
-
-void GameplayScene::_advanceLevel()
-{
-    if (!m_LevelLoader.HasNextLevel(m_CurrentLevelIndex))
-    {
-        Game::Get()->SetScene(std::make_unique<WinScene>(m_Score));
-        return;
-    }
-
-    m_CurrentLevelIndex++;
-
-    m_Bricks.clear();
-    m_Abilities.clear();
-    m_EffectManager.ClearAll();
-    m_DestroyedInRow = 0;
-
-    if (m_Balls.size() > 1)
-        m_Balls.erase(m_Balls.begin() + 1, m_Balls.end());
-    _resetBall(m_Balls.front());
-
-    m_Paddle->SetWidth(g_PaddleWidth);
-    m_Paddle->SetPosition({g_WindowWidth / 2.0f - g_PaddleWidth / 2.0f,
-                           g_WindowHeight - g_PaddleHeight - g_PaddleBottomMargin});
-
-    _loadLevel();
-}
-
 void GameplayScene::_subscribeEvents()
 {
     Game::Get()->GetEventBus().Subscribe<BrickDeathEvent>(
@@ -181,7 +144,7 @@ void GameplayScene::_subscribeEvents()
                 [](const std::unique_ptr<Brick>& b) { return b && b->IsDestructible() && b->IsAlive(); });
 
             if (allDestroyed)
-                _advanceLevel();
+                Game::Get()->OnLevelComplete(m_Score);
         });
 
     Game::Get()->GetEventBus().Subscribe<BallLostEvent>(
@@ -199,7 +162,7 @@ void GameplayScene::_subscribeEvents()
 
             if (m_Lives <= 0)
             {
-                Game::Get()->SetScene(std::make_unique<GameOverScene>(m_Score));
+                Game::Get()->OnGameOver(m_Score);
                 return;
             }
 

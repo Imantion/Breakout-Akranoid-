@@ -1,4 +1,4 @@
-#include "GameOverScene.hpp"
+#include "LevelCompleteScene.hpp"
 #include "core/Game.hpp"
 #include "core/Constants.hpp"
 #include "scenes/MenuScene.hpp"
@@ -8,11 +8,11 @@
 namespace Breakout
 {
 
-GameOverScene::GameOverScene(int finalScore)
-    : m_Title(Game::Get()->GetFont(), "GAME OVER", g_TitleFontSize,
-              {0.0f, g_WindowHeight * 0.12f}, sf::Color(230, 70, 70))
+LevelCompleteScene::LevelCompleteScene(int currentScore)
+    : m_Title(Game::Get()->GetFont(), "LEVEL COMPLETE", g_TitleFontSize,
+              {0.0f, g_WindowHeight * 0.12f}, sf::Color(100, 200, 255))
     , m_ScoreLabel(Game::Get()->GetFont(),
-                   "Score: " + std::to_string(finalScore), g_MenuFontSize,
+                   "Score: " + std::to_string(currentScore), g_MenuFontSize,
                    {0.0f, g_WindowHeight * 0.35f}, sf::Color::White)
     , m_BestScoreLabel(Game::Get()->GetFont(),
                        "Level Best: " + std::to_string(
@@ -24,9 +24,9 @@ GameOverScene::GameOverScene(int finalScore)
     m_ScoreLabel.CenterHorizontally(g_WindowWidth);
     m_BestScoreLabel.CenterHorizontally(g_WindowWidth);
 
-    m_Buttons.emplace_back(Game::Get()->GetFont(), "Play Again", g_MenuFontSize,
+    m_Buttons.emplace_back(Game::Get()->GetFont(), "Next Level", g_MenuFontSize,
                            sf::Vector2f{0.0f, g_WindowHeight * 0.55f},
-                           []() { Game::Get()->StartCampaign(); });
+                           []() { Game::Get()->LoadNextLevel(); });
 
     m_Buttons.emplace_back(Game::Get()->GetFont(), "Main Menu", g_MenuFontSize,
                            sf::Vector2f{0.0f, g_WindowHeight * 0.65f},
@@ -36,32 +36,26 @@ GameOverScene::GameOverScene(int finalScore)
         button.CenterHorizontally(g_WindowWidth);
 }
 
-void GameOverScene::ProcessInput(sf::RenderWindow& window)
+void LevelCompleteScene::ProcessInput(sf::RenderWindow& window)
 {
     while (const auto event = window.pollEvent())
     {
         if (event->is<sf::Event::Closed>())
             window.close();
 
-        if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>())
-        {
-            if (keyPressed->scancode == sf::Keyboard::Scancode::Escape)
-                window.close();
-        }
-
         for (auto& button : m_Buttons)
             button.HandleEvent(*event, window);
     }
 }
 
-void GameOverScene::Update([[maybe_unused]] float dt)
+void LevelCompleteScene::Update([[maybe_unused]] float dt)
 {
     auto& window = Game::Get()->GetWindow();
     for (auto& button : m_Buttons)
         button.Update(window);
 }
 
-void GameOverScene::Render(RenderSystem& renderer, sf::RenderWindow& window)
+void LevelCompleteScene::Render(RenderSystem& renderer, sf::RenderWindow& window)
 {
     renderer.DrawLabel(window, m_Title);
     renderer.DrawLabel(window, m_ScoreLabel);

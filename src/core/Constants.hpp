@@ -46,6 +46,9 @@ constexpr int g_MultiHPBrickHp = 2;
 
 constexpr float g_AimLineLength = 80.0f;
 
+constexpr char g_ScoresFile[]  = "data/scores.txt";
+constexpr int  g_MaxScoreEntries = 10;
+
 constexpr float g_HudMargin   = 10.0f;
 constexpr unsigned int g_HudFontSize  = 20;
 constexpr unsigned int g_TitleFontSize = 64;

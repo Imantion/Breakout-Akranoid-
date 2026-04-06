@@ -10,10 +10,10 @@
 namespace Breakout
 {
 
-class MenuScene : public Scene
+class LevelCompleteScene : public Scene
 {
 public:
-    MenuScene();
+    explicit LevelCompleteScene(int currentScore);
 
     void ProcessInput(sf::RenderWindow& window) override;
     void Update(float dt) override;
@@ -21,7 +21,8 @@ public:
 
 private:
     Label                m_Title;
-    Label                m_TotalScoreLabel;
+    Label                m_ScoreLabel;
+    Label                m_BestScoreLabel;
     std::vector<Button>  m_Buttons;
 };
 
