@@ -46,4 +46,12 @@ bool EffectManager::HasEffect(EffectType type) const
         [type](const ActiveEffect& e) { return e.type == type; });
 }
 
+void EffectManager::ClearAll()
+{
+    for (auto& effect : m_ActiveEffects)
+        effect.onExpire();
+
+    m_ActiveEffects.clear();
+}
+
 } // namespace Breakout

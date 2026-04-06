@@ -17,16 +17,19 @@ namespace Breakout
 {
 
 GameplayScene::GameplayScene()
-    : m_Score(0)
+    : m_CurrentLevelIndex(0)
+    , m_Score(0)
     , m_Lives(g_StartingLives)
     , m_DestroyedInRow(0)
-    , m_ScoreLabel(Game::Get()->GetFont(), "Score: 0", g_HudFontSize,
-                   {g_HudMargin, g_HudMargin})
+    , m_ScoreLabel(Game::Get()->GetFont(), "Score: 0",
+                   g_HudFontSize, {g_HudMargin, g_HudMargin})
     , m_LivesLabel(Game::Get()->GetFont(),
                    "Lives: " + std::to_string(g_StartingLives), g_HudFontSize,
                    {0.0f, g_HudMargin})
     , m_Rng(std::random_device{}())
 {
+    m_LevelLoader.LoadCampaign(g_CampaignFile);
+
     auto& texMgr = Game::Get()->GetTextureManager();
 
     m_Paddle = std::make_unique<Paddle>(
@@ -41,7 +44,7 @@ GameplayScene::GameplayScene()
         g_BallRadius);
 
     _resetBall(m_Balls.back());
-    _initBricks();
+    _loadLevel();
 
     float livesX = g_WindowWidth - g_HudMargin - 120.0f;
     m_LivesLabel.SetPosition({livesX, g_HudMargin});
@@ -131,33 +134,39 @@ void GameplayScene::AddEffect(EffectType type, float duration,
     m_EffectManager.PushEffect(type, duration, std::move(onApply), std::move(onExpire));
 }
 
-void GameplayScene::_initBricks()
+void GameplayScene::_loadLevel()
 {
-    m_Bricks.reserve(g_BrickColumns * g_BrickRows);
+    m_Bricks = m_LevelLoader.LoadLevel(m_CurrentLevelIndex);
+}
 
-    for (int row = 0; row < g_BrickRows; ++row)
+void GameplayScene::_advanceLevel()
+{
+    if (!m_LevelLoader.HasNextLevel(m_CurrentLevelIndex))
     {
-        for (int col = 0; col < g_BrickColumns; ++col)
-        {
-            float x = g_BrickGridLeftMargin + col * (g_BrickWidth + g_BrickPadding);
-            float y = g_BrickGridTopMargin + row * (g_BrickHeight + g_BrickPadding);
-            auto pos = sf::Vector2f{x, y};
-
-            if (row == g_BrickRows - 1)
-                m_Bricks.push_back(BrickFactory::CreateInvulnerable(pos, g_BrickWidth, g_BrickHeight, row));
-            else if (row >= g_BrickRows / 2)
-                m_Bricks.push_back(BrickFactory::CreateDestructible(pos, g_BrickWidth, g_BrickHeight, row, g_MultiHPBrickHp));
-            else
-                m_Bricks.push_back(BrickFactory::CreateDestructible(pos, g_BrickWidth, g_BrickHeight, row, 1));
-        }
+        Game::Get()->SetScene(std::make_unique<WinScene>(m_Score));
+        return;
     }
+
+    m_CurrentLevelIndex++;
+
+    m_Bricks.clear();
+    m_Abilities.clear();
+    m_EffectManager.ClearAll();
+    m_DestroyedInRow = 0;
+
+    if (m_Balls.size() > 1)
+        m_Balls.erase(m_Balls.begin() + 1, m_Balls.end());
+    _resetBall(m_Balls.front());
+
+    m_Paddle->SetWidth(g_PaddleWidth);
+    m_Paddle->SetPosition({g_WindowWidth / 2.0f - g_PaddleWidth / 2.0f,
+                           g_WindowHeight - g_PaddleHeight - g_PaddleBottomMargin});
+
+    _loadLevel();
 }
 
 void GameplayScene::_subscribeEvents()
 {
-
-    // This events are fine. They won't cause crashes, even though we modify vectors
-    // EventBust dispatches them at the end of the frame, so we're safe.
     Game::Get()->GetEventBus().Subscribe<BrickDeathEvent>(
         [this](const BrickDeathEvent& event)
         {
@@ -172,7 +181,7 @@ void GameplayScene::_subscribeEvents()
                 [](const std::unique_ptr<Brick>& b) { return b && b->IsDestructible() && b->IsAlive(); });
 
             if (allDestroyed)
-                Game::Get()->SetScene(std::make_unique<WinScene>(m_Score));
+                _advanceLevel();
         });
 
     Game::Get()->GetEventBus().Subscribe<BallLostEvent>(
@@ -215,6 +224,7 @@ void GameplayScene::_subscribeEvents()
             event.ability.Apply(context);
             event.ability.Kill();
         });
+
     Game::Get()->GetEventBus().Subscribe<AbilityFallOutOfBoundsEvent>(
         [this](const AbilityFallOutOfBoundsEvent& event)
         {

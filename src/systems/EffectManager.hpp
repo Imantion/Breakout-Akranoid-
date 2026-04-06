@@ -30,6 +30,8 @@ public:
 
     bool HasEffect(EffectType type) const;
 
+    void ClearAll();
+
 private:
     std::vector<ActiveEffect> m_ActiveEffects;
 };

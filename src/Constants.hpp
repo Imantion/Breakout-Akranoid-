@@ -22,16 +22,14 @@ constexpr float g_BallSpeed  = 400.0f;
 constexpr float g_BrickWidth  = 60.0f;
 constexpr float g_BrickHeight = 20.0f;
 constexpr float g_BrickPadding = 4.0f;
-constexpr int   g_BrickColumns = 10;
-constexpr int   g_BrickRows    = 5;
-constexpr float g_BrickGridTopMargin  = 40.0f;
-constexpr float g_BrickGridLeftMargin =
-    (g_WindowWidth - (g_BrickColumns * (g_BrickWidth + g_BrickPadding) - g_BrickPadding)) / 2.0f;
+constexpr float g_BrickGridTopMargin = 40.0f;
 
 constexpr float g_MaxBounceAngle = 60.0f * 3.14159265f / 180.0f;
 
-constexpr char g_DataDirectory[] = "data";
-constexpr char g_FontFile[]      = "data/font.ttf";
+constexpr char g_DataDirectory[]  = "data";
+constexpr char g_FontFile[]       = "data/font.ttf";
+constexpr char g_LevelsDirectory[] = "data/levels";
+constexpr char g_CampaignFile[]   = "data/levels/campaign.txt";
 
 constexpr int g_StartingLives = 3;
 constexpr int g_ScorePerBrick = 10;

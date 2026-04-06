@@ -11,6 +11,7 @@
 #include "systems/MovementSystem.hpp"
 #include "systems/CollisionSystem.hpp"
 #include "systems/EffectManager.hpp"
+#include "LevelLoader.hpp"
 
 #include <functional>
 #include <memory>
@@ -39,7 +40,8 @@ public:
                    std::function<void()> onExpire);
 
 private:
-    void _initBricks();
+    void _loadLevel();
+    void _advanceLevel();
     void _subscribeEvents();
     void _resetBall(Ball& ball);
     void _updateHud();
@@ -48,6 +50,9 @@ private:
     void _cleanupDeadAbilities();
     void _launchAttachedBall(const sf::RenderWindow& window, sf::Vector2i mousePixel);
     Ball* _findAttachedBall();
+
+    LevelLoader m_LevelLoader;
+    int         m_CurrentLevelIndex;
 
     std::unique_ptr<Paddle>                   m_Paddle;
     std::vector<Ball>                         m_Balls;
