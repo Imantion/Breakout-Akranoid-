@@ -25,6 +25,11 @@ struct BallHitBrickEvent
     Brick& brick;
 };
 
+struct BrickDeathEvent
+{
+    Brick& brick;
+};
+
 struct BallLostEvent
 {
     Ball& ball;

@@ -44,6 +44,8 @@ constexpr float g_AbilitySpawnChance   = 0.2f;
 constexpr float g_WidePaddleDuration   = 8.0f;
 constexpr float g_WidePaddleMultiplier = 1.5f;
 
+constexpr int g_MultiHPBrickHp = 2;
+
 constexpr float g_AimLineLength = 80.0f;
 
 constexpr float g_HudMargin   = 10.0f;

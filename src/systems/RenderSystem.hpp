@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <memory>
 #include <span>
 #include <vector>
 
@@ -20,13 +21,10 @@ public:
     void EndFrame(sf::RenderWindow& window);
 
     void DrawActor(sf::RenderWindow& window, const Actor& actor);
-    void DrawBricks(sf::RenderWindow& window, const std::span<Brick> bricks);
+    void DrawBricks(sf::RenderWindow& window, std::span<std::unique_ptr<Brick>> bricks);
     void DrawLabel(sf::RenderWindow& window, const Label& label);
     void DrawButton(sf::RenderWindow& window, const Button& button);
     void DrawAimLine(sf::RenderWindow& window, const AimLine& aimLine);
-
-private:
-    sf::VertexArray m_BrickBatch{sf::PrimitiveType::Triangles};
 };
 
 } // namespace Breakout

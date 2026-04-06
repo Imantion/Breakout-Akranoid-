@@ -6,9 +6,8 @@
 #include "scenes/MenuScene.hpp"
 #include "scenes/GameOverScene.hpp"
 #include "scenes/WinScene.hpp"
-#include "entities/abilities/MultiBallAbility.hpp"
-#include "entities/abilities/ExtraLifeAbility.hpp"
-#include "entities/abilities/WidePaddleAbility.hpp"
+#include "entities/BrickFactory.hpp"
+#include "entities/AbilityFactory.hpp"
 
 #include <algorithm>
 #include <cmath>
@@ -134,8 +133,6 @@ void GameplayScene::AddEffect(EffectType type, float duration,
 
 void GameplayScene::_initBricks()
 {
-    const auto& brickTex = Game::Get()->GetTextureManager().GetTexture("brick");
-
     m_Bricks.reserve(g_BrickColumns * g_BrickRows);
 
     for (int row = 0; row < g_BrickRows; ++row)
@@ -144,11 +141,14 @@ void GameplayScene::_initBricks()
         {
             float x = g_BrickGridLeftMargin + col * (g_BrickWidth + g_BrickPadding);
             float y = g_BrickGridTopMargin + row * (g_BrickHeight + g_BrickPadding);
+            auto pos = sf::Vector2f{x, y};
 
-            m_Bricks.emplace_back(brickTex,
-                                  sf::Vector2f{x, y},
-                                  g_BrickWidth, g_BrickHeight,
-                                  row);
+            if (row == g_BrickRows - 1)
+                m_Bricks.push_back(BrickFactory::CreateInvulnerable(pos, g_BrickWidth, g_BrickHeight, row));
+            else if (row >= g_BrickRows / 2)
+                m_Bricks.push_back(BrickFactory::CreateDestructible(pos, g_BrickWidth, g_BrickHeight, row, g_MultiHPBrickHp));
+            else
+                m_Bricks.push_back(BrickFactory::CreateDestructible(pos, g_BrickWidth, g_BrickHeight, row, 1));
         }
     }
 }
@@ -158,8 +158,8 @@ void GameplayScene::_subscribeEvents()
 
     // This events are fine. They won't cause crashes, even though we modify vectors
     // EventBust dispatches them at the end of the frame, so we're safe.
-    Game::Get()->GetEventBus().Subscribe<BallHitBrickEvent>(
-        [this](const BallHitBrickEvent& event)
+    Game::Get()->GetEventBus().Subscribe<BrickDeathEvent>(
+        [this](const BrickDeathEvent& event)
         {
             ++m_DestroyedInRow;
             m_Score += m_DestroyedInRow >= g_DestroyedInRow
@@ -169,7 +169,7 @@ void GameplayScene::_subscribeEvents()
             _spawnAbility(event.brick.GetPosition());
 
             bool allDestroyed = std::none_of(m_Bricks.begin(), m_Bricks.end(),
-                [](const Brick& b) { return b.IsAlive(); });
+                [](const std::unique_ptr<Brick>& b) { return b && b->IsDestructible() && b->IsAlive(); });
 
             if (allDestroyed)
                 Game::Get()->SetScene(std::make_unique<WinScene>(m_Score));
@@ -257,25 +257,7 @@ void GameplayScene::_spawnAbility(sf::Vector2f position)
     if (chanceDist(m_Rng) > g_AbilitySpawnChance)
         return;
 
-    auto& texMgr = Game::Get()->GetTextureManager();
-    std::uniform_int_distribution<int> typeDist(0, 2);
-    int type = typeDist(m_Rng);
-
-    switch (type)
-    {
-    case 0:
-        m_Abilities.push_back(std::make_unique<MultiBallAbility>(
-            texMgr.GetTexture("multi_ball"), position, g_AbilitySize));
-        break;
-    case 1:
-        m_Abilities.push_back(std::make_unique<ExtraLifeAbility>(
-            texMgr.GetTexture("hp"), position, g_AbilitySize));
-        break;
-    case 2:
-        m_Abilities.push_back(std::make_unique<WidePaddleAbility>(
-            texMgr.GetTexture("wide_paddle"), position, g_AbilitySize));
-        break;
-    }
+    m_Abilities.push_back(AbilityFactory::CreateRandom(position));
 }
 
 void GameplayScene::_cleanupDeadAbilities()

@@ -10,7 +10,7 @@ namespace Breakout
 {
 
 void CollisionSystem::Update(std::span<Ball> balls, Paddle& paddle,
-                             std::span<Brick> bricks,
+                             std::span<std::unique_ptr<Brick>> bricks,
                              std::span<std::unique_ptr<Ability>> abilities) const
 {
     _clampPaddleToWindow(paddle);
@@ -114,7 +114,7 @@ void CollisionSystem::_handlePaddleCollision(std::span<Ball> balls, const Paddle
     }
 }
 
-void CollisionSystem::_handleBrickCollisions(std::span<Ball> balls, std::span<Brick> bricks) const
+void CollisionSystem::_handleBrickCollisions(std::span<Ball> balls, std::span<std::unique_ptr<Brick>> bricks) const
 {
     for (auto& ball : balls)
     {
@@ -127,18 +127,18 @@ void CollisionSystem::_handleBrickCollisions(std::span<Ball> balls, std::span<Br
 
         for (auto& brick : bricks)
         {
-            if (!brick.IsAlive())
+            if (!brick || !brick->IsAlive())
                 continue;
 
-            auto brickPos  = brick.GetPosition();
-            auto brickSize = brick.GetSize();
+            auto brickPos  = brick->GetPosition();
+            auto brickSize = brick->GetSize();
 
             Collision collision = _AABBCircleCollision(ballPos, r, brickPos, brickSize);
 
             if (!collision.Hit)
                 continue;
 
-            brick.OnHit();
+            brick->OnHit();
 
             float overlapLeft   = (ballPos.x + r) - brickPos.x;
             float overlapRight  = (brickPos.x + brickSize.x) - (ballPos.x - r);
@@ -164,7 +164,7 @@ void CollisionSystem::_handleBrickCollisions(std::span<Ball> balls, std::span<Br
             ball.SetPosition(ballPos);
             ball.SetVelocity(ballVel);
 
-            Game::Get()->GetEventBus().Publish(BallHitBrickEvent{ball, brick});
+            Game::Get()->GetEventBus().Publish(BallHitBrickEvent{ball, *brick});
             break;
         }
     }

@@ -51,7 +51,7 @@ private:
 
     std::unique_ptr<Paddle>                   m_Paddle;
     std::vector<Ball>                         m_Balls;
-    std::vector<Brick>                        m_Bricks;
+    std::vector<std::unique_ptr<Brick>>       m_Bricks;
     std::vector<std::unique_ptr<Ability>>     m_Abilities;
 
     PaddleController   m_PaddleController;
