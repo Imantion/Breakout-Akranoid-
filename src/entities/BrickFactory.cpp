@@ -1,7 +1,7 @@
 #include "BrickFactory.hpp"
 #include "DestructibleBrick.hpp"
 #include "InvulnerableBrick.hpp"
-#include "Game.hpp"
+#include "core/Game.hpp"
 
 namespace Breakout
 {

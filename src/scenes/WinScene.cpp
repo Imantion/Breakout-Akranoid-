@@ -1,7 +1,7 @@
 #include "WinScene.hpp"
-#include "Game.hpp"
-#include "Constants.hpp"
-#include "scenes/GameplayScene.hpp"
+#include "core/Game.hpp"
+#include "core/Constants.hpp"
+#include "GameplayScene.hpp"
 
 #include <string>
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Actor.hpp"
-#include "GameplayContext.hpp"
+#include "core/GameplayContext.hpp"
 
 namespace Breakout
 {

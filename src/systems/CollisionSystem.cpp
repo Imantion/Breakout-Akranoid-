@@ -1,7 +1,7 @@
 #include "CollisionSystem.hpp"
-#include "Constants.hpp"
-#include "Game.hpp"
-#include "Events.hpp"
+#include "core/Constants.hpp"
+#include "core/Game.hpp"
+#include "events/Events.hpp"
 
 #include <cmath>
 #include <algorithm>

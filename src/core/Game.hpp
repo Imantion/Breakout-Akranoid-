@@ -3,8 +3,8 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 
-#include "EventBus.hpp"
-#include "TextureManager.hpp"
+#include "events/EventBus.hpp"
+#include "managers/TextureManager.hpp"
 #include "systems/RenderSystem.hpp"
 
 namespace Breakout

@@ -11,7 +11,7 @@
 #include "systems/MovementSystem.hpp"
 #include "systems/CollisionSystem.hpp"
 #include "systems/EffectManager.hpp"
-#include "LevelLoader.hpp"
+#include "levels/LevelLoader.hpp"
 
 #include <functional>
 #include <memory>

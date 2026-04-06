@@ -1,7 +1,7 @@
 #include "Brick.hpp"
 
-#include "Game.hpp"
-#include "Events.hpp"
+#include "core/Game.hpp"
+#include "events/Events.hpp"
 
 namespace Breakout
 {

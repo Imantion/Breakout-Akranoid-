@@ -2,8 +2,8 @@
 #include "abilities/MultiBallAbility.hpp"
 #include "abilities/ExtraLifeAbility.hpp"
 #include "abilities/WidePaddleAbility.hpp"
-#include "Constants.hpp"
-#include "Game.hpp"
+#include "core/Constants.hpp"
+#include "core/Game.hpp"
 
 #include <random>
 

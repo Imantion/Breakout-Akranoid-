@@ -1,5 +1,5 @@
 #include "LevelLoader.hpp"
-#include "Constants.hpp"
+#include "core/Constants.hpp"
 #include "entities/BrickFactory.hpp"
 
 #include <filesystem>

@@ -1,5 +1,5 @@
 #include "WidePaddleAbility.hpp"
-#include "Constants.hpp"
+#include "core/Constants.hpp"
 #include "entities/Paddle.hpp"
 #include "scenes/GameplayScene.hpp"
 

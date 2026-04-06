@@ -1,5 +1,5 @@
-#include "Game.hpp"
-#include "Constants.hpp"
+#include "core/Game.hpp"
+#include "core/Constants.hpp"
 #include "scenes/Scene.hpp"
 #include "scenes/MenuScene.hpp"
 
