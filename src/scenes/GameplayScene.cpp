@@ -208,8 +208,8 @@ void GameplayScene::_subscribeEvents()
             m_DestroyedInRow = 0;
         });
 
-    Game::Get()->GetEventBus().Subscribe<BallHitWallEvent>(
-        [this](const BallHitWallEvent&)
+    Game::Get()->GetEventBus().Subscribe<BallHitPaddleEvent>(
+        [this](const BallHitPaddleEvent&)
         {
             m_DestroyedInRow = 0;
         });

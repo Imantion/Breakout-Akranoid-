@@ -39,6 +39,7 @@ GameOverScene::GameOverScene(int finalScore)
 void GameOverScene::OnEnter()
 {
     Game::Get()->GetAudioSystem().StopMusic();
+    Game::Get()->GetAudioSystem().PlaySound(g_LoseSound);
 }
 
 void GameOverScene::ProcessInput(sf::RenderWindow& window)

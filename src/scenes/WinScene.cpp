@@ -37,6 +37,7 @@ WinScene::WinScene(int finalScore)
 void WinScene::OnEnter()
 {
     Game::Get()->GetAudioSystem().StopMusic();
+	Game::Get()->GetAudioSystem().PlaySound(g_WinSound);
 }
 
 void WinScene::ProcessInput(sf::RenderWindow& window)
