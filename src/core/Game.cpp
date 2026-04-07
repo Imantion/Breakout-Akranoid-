@@ -21,7 +21,12 @@ Game* Game::s_Instance = nullptr;
 
 Game::Game()
     : m_Window(sf::VideoMode({g_WindowWidth, g_WindowHeight}), g_WindowTitle)
-	, m_Font(g_FontFile), m_TextureManager(), m_ScoreManager(), m_LevelLoader(), m_RenderSystem(), m_AudioSystem()
+	, m_Font(g_FontFile), m_TextureManager(std::make_unique<TextureManager>())
+    , m_EventBus(std::make_unique<EventBus>())
+    , m_ScoreManager(std::make_unique<ScoreManager>())
+    , m_LevelLoader(std::make_unique<LevelLoader>())
+    , m_RenderSystem(std::make_unique<RenderSystem>())
+    , m_AudioSystem(std::make_unique<AudioSystem>())
 {
     s_Instance = this;
     m_Window.setFramerateLimit(0);
