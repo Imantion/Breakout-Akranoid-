@@ -5,7 +5,7 @@ namespace Breakout
 {
 
 Ability::Ability(const sf::Texture& texture, sf::Vector2f position, float size)
-    : Actor(texture, position, size, size)
+    : Actor(EntityType::Ability, texture, position, size, size)
     , m_IsAlive(true)
 {
 }

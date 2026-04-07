@@ -1,48 +1,44 @@
 #pragma once
 
+#include "utils/uuid.hpp"
+
 namespace Breakout
 {
 
-class Ball;
-class Paddle;
-class Brick;
-class Ability;
-
 struct BallHitWallEvent
 {
-    Ball& ball;
+    uuids::uuid ballUUID;
 };
 
 struct BallHitPaddleEvent
 {
-    Ball& ball;
-    const Paddle& paddle;
+    uuids::uuid ballUUID;
 };
 
 struct BallHitBrickEvent
 {
-    Ball& ball;
-    Brick& brick;
+    uuids::uuid ballUUID;
+    uuids::uuid brickUUID;
 };
 
 struct BrickDeathEvent
 {
-    Brick& brick;
+    uuids::uuid brickUUID;
 };
 
 struct BallLostEvent
 {
-    Ball& ball;
+    uuids::uuid ballUUID;
 };
 
 struct AbilityPickedUpEvent
 {
-    Ability& ability;
+    uuids::uuid abilityUUID;
 };
 
 struct AbilityFallOutOfBoundsEvent
 {
-    Ability& ability;
+    uuids::uuid abilityUUID;
 };
 
 } // namespace Breakout

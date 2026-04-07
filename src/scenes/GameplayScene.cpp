@@ -14,8 +14,7 @@ namespace Breakout
 {
 
 GameplayScene::GameplayScene(std::vector<std::unique_ptr<Brick>> bricks)
-    : m_Bricks(std::move(bricks))
-    , m_Score(0)
+    : m_Score(0)
     , m_Lives(g_StartingLives)
     , m_DestroyedInRow(0)
     , m_ScoreLabel(Game::Get()->GetFont(), "Score: 0",
@@ -26,19 +25,27 @@ GameplayScene::GameplayScene(std::vector<std::unique_ptr<Brick>> bricks)
     , m_Rng(std::random_device{}())
 {
     auto& texMgr = Game::Get()->GetTextureManager();
+    m_Registry.reserve(bricks.size() + 2); // +2 for paddle and ball
 
-    m_Paddle = std::make_unique<Paddle>(
+    m_Paddle = _registerActor(std::make_unique<Paddle>(
         texMgr.GetTexture("paddle"),
         sf::Vector2f{g_WindowWidth / 2.0f - g_PaddleWidth / 2.0f,
                      g_WindowHeight - g_PaddleHeight - g_PaddleBottomMargin},
-        g_PaddleWidth, g_PaddleHeight);
+        g_PaddleWidth, g_PaddleHeight));
 
-    m_Balls.emplace_back(
+    auto* ball = _registerActor(std::make_unique<Ball>(
         texMgr.GetTexture("ball"),
         sf::Vector2f{g_WindowWidth / 2.0f, g_WindowHeight / 2.0f},
-        g_BallRadius);
+        g_BallRadius));
+    m_Balls.push_back(ball);
+    _resetBall(*ball);
 
-    _resetBall(m_Balls.back());
+    m_Bricks.reserve(bricks.size());
+    for (auto& brick : bricks)
+    {
+            auto* rawBrick = _registerActor(std::move(brick));
+            m_Bricks.push_back(rawBrick);
+    }
 
     float livesX = g_WindowWidth - g_HudMargin - 120.0f;
     m_LivesLabel.SetPosition({livesX, g_HudMargin});
@@ -85,7 +92,7 @@ void GameplayScene::Update(float dt)
 
     _handleAim();
     _updateHud();
-    _cleanupDeadAbilities();
+    _cleanupDead();
 }
 
 void GameplayScene::Render(RenderSystem& renderer, sf::RenderWindow& window)
@@ -93,10 +100,13 @@ void GameplayScene::Render(RenderSystem& renderer, sf::RenderWindow& window)
     renderer.DrawBricks(window, m_Bricks);
     renderer.DrawActor(window, *m_Paddle);
 
-    for (const auto& ball : m_Balls)
-        renderer.DrawActor(window, ball);
+    for (auto* ball : m_Balls)
+    {
+        if (ball)
+            renderer.DrawActor(window, *ball);
+    }
 
-    for (const auto& ability : m_Abilities)
+    for (auto* ability : m_Abilities)
     {
         if (ability && ability->IsAlive())
             renderer.DrawActor(window, *ability);
@@ -111,8 +121,10 @@ void GameplayScene::Render(RenderSystem& renderer, sf::RenderWindow& window)
 void GameplayScene::AddBall(sf::Vector2f position, sf::Vector2f velocity)
 {
     auto& texMgr = Game::Get()->GetTextureManager();
-    m_Balls.emplace_back(texMgr.GetTexture("ball"), position, g_BallRadius);
-    m_Balls.back().SetVelocity(velocity);
+    auto* ball = _registerActor(std::make_unique<Ball>(
+        texMgr.GetTexture("ball"), position, g_BallRadius));
+    ball->SetVelocity(velocity);
+    m_Balls.push_back(ball);
 }
 
 void GameplayScene::AddLife()
@@ -128,20 +140,41 @@ void GameplayScene::AddEffect(EffectType type, float duration,
     m_EffectManager.PushEffect(type, duration, std::move(onApply), std::move(onExpire));
 }
 
+Actor* GameplayScene::FindActor(const uuids::uuid& uuid)
+{
+    auto it = m_Registry.find(uuid);
+    if (it == m_Registry.end())
+        return nullptr;
+    return it->second.get();
+}
+
+template<typename T>
+T* GameplayScene::_registerActor(std::unique_ptr<T> actor)
+{
+    T* raw = actor.get();
+    m_Registry[raw->GetUUID()] = std::move(actor);
+    return raw;
+}
+
 void GameplayScene::_subscribeEvents()
 {
     Game::Get()->GetEventBus().Subscribe<BrickDeathEvent>(
         [this](const BrickDeathEvent& event)
         {
+            auto* actor = FindActor(event.brickUUID);
+            if (!actor || actor->GetType() != EntityType::Destructible) 
+                return;
+            auto* brick = static_cast<Brick*>(actor);
+
             ++m_DestroyedInRow;
             m_Score += m_DestroyedInRow >= g_DestroyedInRow
                 ? g_ScorePerBrick + g_DestroyedInRowBonus
                 : g_ScorePerBrick;
 
-            _spawnAbility(event.brick.GetPosition());
+            _spawnAbility(brick->GetPosition());
 
             bool allDestroyed = std::none_of(m_Bricks.begin(), m_Bricks.end(),
-                [](const std::unique_ptr<Brick>& b) { return b && b->IsDestructible() && b->IsAlive(); });
+                [](Brick* b) { return b && b->IsDestructible() && b->IsAlive(); });
 
             if (allDestroyed)
                 Game::Get()->OnLevelComplete(m_Score);
@@ -150,11 +183,15 @@ void GameplayScene::_subscribeEvents()
     Game::Get()->GetEventBus().Subscribe<BallLostEvent>(
         [this](const BallLostEvent& event)
         {
+            auto* actor = FindActor(event.ballUUID);
+            if (!actor || actor->GetType() != EntityType::Ball) 
+                return;
+            auto* ball = static_cast<Ball*>(actor);
+
             if (m_Balls.size() > 1)
             {
-                m_Balls.erase(std::remove_if(m_Balls.begin(), m_Balls.end(),
-                    [&event](const Ball& ball) { return &ball == &event.ball; }),
-                m_Balls.end());
+                m_Balls.erase(std::remove(m_Balls.begin(), m_Balls.end(), ball), m_Balls.end());
+                m_Registry.erase(event.ballUUID);
                 return;
             }
 
@@ -166,7 +203,7 @@ void GameplayScene::_subscribeEvents()
                 return;
             }
 
-            _resetBall(event.ball);
+            _resetBall(*ball);
             m_DestroyedInRow = 0;
         });
 
@@ -179,19 +216,29 @@ void GameplayScene::_subscribeEvents()
     Game::Get()->GetEventBus().Subscribe<AbilityPickedUpEvent>(
         [this](const AbilityPickedUpEvent& event)
         {
+            auto* actor = FindActor(event.abilityUUID);
+            if (!actor || actor->GetType() != EntityType::Ability) 
+                return;
+
+            auto* ability = static_cast<Ability*>(actor);
+
             GameplayContext context{
                 .paddle = *m_Paddle,
                 .scene  = *this
             };
 
-            event.ability.Apply(context);
-            event.ability.Kill();
+            ability->Apply(context);
+            ability->Kill();
         });
 
     Game::Get()->GetEventBus().Subscribe<AbilityFallOutOfBoundsEvent>(
         [this](const AbilityFallOutOfBoundsEvent& event)
         {
-            event.ability.Kill();
+            auto* actor = FindActor(event.abilityUUID);
+            if (!actor || actor->GetType() != EntityType::Ability) 
+                return;
+
+            static_cast<Ability*>(actor)->Kill();
         });
 }
 
@@ -230,15 +277,25 @@ void GameplayScene::_spawnAbility(sf::Vector2f position)
     if (chanceDist(m_Rng) > g_AbilitySpawnChance)
         return;
 
-    m_Abilities.push_back(AbilityFactory::CreateRandom(position));
+    auto* ability = _registerActor(AbilityFactory::CreateRandom(position));
+    m_Abilities.push_back(ability);
 }
 
-void GameplayScene::_cleanupDeadAbilities()
+void GameplayScene::_cleanupDead()
 {
-    m_Abilities.erase(
-        std::remove_if(m_Abilities.begin(), m_Abilities.end(),
-            [](const std::unique_ptr<Ability>& a) { return !a || !a->IsAlive(); }),
-        m_Abilities.end());
+    for (auto it = m_Abilities.begin(); it != m_Abilities.end(); )
+    {
+        if (!*it || !(*it)->IsAlive())
+        {
+            if (*it)
+                m_Registry.erase((*it)->GetUUID());
+            it = m_Abilities.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
 }
 
 void GameplayScene::_launchAttachedBall(const sf::RenderWindow& window, sf::Vector2i mousePixel)
@@ -263,10 +320,10 @@ void GameplayScene::_launchAttachedBall(const sf::RenderWindow& window, sf::Vect
 
 Ball* GameplayScene::_findAttachedBall()
 {
-    for (auto& ball : m_Balls)
+    for (auto* ball : m_Balls)
     {
-        if (ball.IsAttached())
-            return &ball;
+        if (ball && ball->IsAttached())
+            return ball;
     }
     return nullptr;
 }

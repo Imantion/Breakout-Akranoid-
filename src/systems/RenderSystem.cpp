@@ -18,9 +18,9 @@ void RenderSystem::DrawActor(sf::RenderWindow& window, const Actor& actor)
     window.draw(actor.GetSprite());
 }
 
-void RenderSystem::DrawBricks(sf::RenderWindow& window, std::span<std::unique_ptr<Brick>> bricks)
+void RenderSystem::DrawBricks(sf::RenderWindow& window, std::span<Brick*> bricks)
 {
-    for (const auto& brick : bricks)
+    for (auto* brick : bricks)
     {
         if (brick && brick->IsAlive())
             brick->Draw(window);

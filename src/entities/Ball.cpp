@@ -4,7 +4,7 @@ namespace Breakout
 {
 
 Ball::Ball(const sf::Texture& texture, sf::Vector2f position, float radius)
-    : Actor(texture, position, radius * 2.0f, radius * 2.0f)
+    : Actor(EntityType::Ball, texture, position, radius * 2.0f, radius * 2.0f)
     , m_Radius(radius)
     , m_Velocity({0.0f, 0.0f})
     , m_State(BallState::Free)

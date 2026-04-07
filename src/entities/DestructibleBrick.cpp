@@ -8,7 +8,7 @@ namespace Breakout
 DestructibleBrick::DestructibleBrick(std::vector<const sf::Texture*> textures,
                                      sf::Vector2f position, float width, float height,
                                      int colorIndex, int hp)
-    : Brick(*textures.at(0), position, width, height, colorIndex)
+    : Brick(EntityType::Destructible, *textures.at(0), position, width, height, colorIndex)
     , m_Hp(hp)
     , m_MaxHp(hp)
     , m_HpTextures(std::move(textures))

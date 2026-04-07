@@ -4,7 +4,7 @@ namespace Breakout
 {
 
 Paddle::Paddle(const sf::Texture& texture, sf::Vector2f position, float width, float height)
-    : Actor(texture, position, width, height)
+    : Actor(EntityType::Player, texture, position, width, height)
     , m_Direction(0.0f)
 {
 }

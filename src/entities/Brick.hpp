@@ -12,7 +12,7 @@ namespace Breakout
 class Brick : public Actor
 {
 public:
-    Brick(const sf::Texture& texture, sf::Vector2f position,
+    Brick(EntityType type, const sf::Texture& texture, sf::Vector2f position,
           float width, float height, int colorIndex);
 
     void OnHit() override = 0;

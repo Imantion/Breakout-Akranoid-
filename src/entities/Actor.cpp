@@ -3,14 +3,26 @@
 namespace Breakout
 {
 
-Actor::Actor(const sf::Texture& texture, sf::Vector2f position, float width, float height)
-    : m_Sprite(texture)
+Actor::Actor(EntityType type, const sf::Texture& texture, sf::Vector2f position, float width, float height)
+    : m_UUID(GenerateUUID())
+    , m_EntityType(type)
+    , m_Sprite(texture)
     , m_Position(position)
     , m_Width(width)
     , m_Height(height)
 {
     ScaleToFit();
     m_Sprite.setPosition(m_Position);
+}
+
+const uuids::uuid& Actor::GetUUID() const
+{
+    return m_UUID;
+}
+
+EntityType Actor::GetType() const
+{
+    return m_EntityType;
 }
 
 void Actor::SetPosition(sf::Vector2f position)

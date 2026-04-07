@@ -19,9 +19,9 @@ constexpr std::array<uint32_t, 5> g_RowColors = {
 
 } // anonymous namespace
 
-Brick::Brick(const sf::Texture& texture, sf::Vector2f position,
+Brick::Brick(EntityType type, const sf::Texture& texture, sf::Vector2f position,
              float width, float height, int colorIndex)
-    : Actor(texture, position, width, height)
+    : Actor(type, texture, position, width, height)
     , m_IsAlive(true)
     , m_Color(ColorFromIndex(colorIndex))
 {
@@ -51,7 +51,7 @@ sf::Color Brick::ColorFromIndex(int colorIndex)
 void Brick::Kill()
 {
     m_IsAlive = false;
-    Game::Get()->GetEventBus().Publish(BrickDeathEvent{*this});
+    Game::Get()->GetEventBus().Publish(BrickDeathEvent{m_UUID});
 }
 
 } // namespace Breakout

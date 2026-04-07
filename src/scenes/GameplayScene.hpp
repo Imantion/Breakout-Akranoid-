@@ -11,6 +11,8 @@
 #include "systems/MovementSystem.hpp"
 #include "systems/CollisionSystem.hpp"
 #include "systems/EffectManager.hpp"
+#include "utils/robin_hood.hpp"
+#include "utils/uuid.hpp"
 
 #include <functional>
 #include <memory>
@@ -38,20 +40,27 @@ public:
                    std::function<void()> onApply,
                    std::function<void()> onExpire);
 
+    Actor* FindActor(const uuids::uuid& uuid);
+
 private:
+    template<typename T>
+    T* _registerActor(std::unique_ptr<T> actor);
+
     void _subscribeEvents();
     void _resetBall(Ball& ball);
     void _updateHud();
     void _handleAim();
     void _spawnAbility(sf::Vector2f position);
-    void _cleanupDeadAbilities();
+    void _cleanupDead();
     void _launchAttachedBall(const sf::RenderWindow& window, sf::Vector2i mousePixel);
     Ball* _findAttachedBall();
 
-    std::unique_ptr<Paddle>                   m_Paddle;
-    std::vector<Ball>                         m_Balls;
-    std::vector<std::unique_ptr<Brick>>       m_Bricks;
-    std::vector<std::unique_ptr<Ability>>     m_Abilities;
+    robin_hood::unordered_map<uuids::uuid, std::unique_ptr<Actor>> m_Registry;
+
+    Paddle*                m_Paddle = nullptr;
+    std::vector<Ball*>     m_Balls;
+    std::vector<Brick*>    m_Bricks;
+    std::vector<Ability*>  m_Abilities;
 
     PaddleController   m_PaddleController;
     MovementSystem     m_MovementSystem;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include "core/EntityUUID.hpp"
 
 namespace Breakout
 {
@@ -8,7 +9,7 @@ namespace Breakout
 class Actor
 {
 public:
-    Actor(const sf::Texture& texture, sf::Vector2f position, float width, float height);
+    Actor(EntityType type, const sf::Texture& texture, sf::Vector2f position, float width, float height);
     virtual ~Actor() = default;
 
     Actor(const Actor&) = default;
@@ -18,6 +19,8 @@ public:
 
     virtual void OnHit() {}
 
+    const uuids::uuid& GetUUID()     const;
+    EntityType          GetType()     const;
     void          SetPosition(sf::Vector2f position);
     void          SetWidth(float width);
     sf::Vector2f  GetPosition() const;
@@ -31,6 +34,8 @@ public:
     void Draw(sf::RenderWindow& window) const;
 
 protected:
+    uuids::uuid  m_UUID;
+    EntityType   m_EntityType;
     sf::Sprite   m_Sprite;
     sf::Vector2f m_Position;
     float        m_Width;

@@ -9,9 +9,9 @@
 namespace Breakout
 {
 
-void CollisionSystem::Update(std::span<Ball> balls, Paddle& paddle,
-                             std::span<std::unique_ptr<Brick>> bricks,
-                             std::span<std::unique_ptr<Ability>> abilities) const
+void CollisionSystem::Update(std::span<Ball*> balls, Paddle& paddle,
+                             std::span<Brick*> bricks,
+                             std::span<Ability*> abilities) const
 {
     _clampPaddleToWindow(paddle);
     _handleWallCollisions(balls);
@@ -29,16 +29,16 @@ void CollisionSystem::_clampPaddleToWindow(Paddle& paddle) const
     paddle.SetPosition(pos);
 }
 
-void CollisionSystem::_handleWallCollisions(std::span<Ball> balls) const
+void CollisionSystem::_handleWallCollisions(std::span<Ball*> balls) const
 {
-    for (auto& ball : balls)
+    for (auto* ball : balls)
     {
-        if (ball.IsAttached())
+        if (!ball || ball->IsAttached())
             continue;
 
-        auto pos = ball.GetPosition();
-        auto vel = ball.GetVelocity();
-        float r  = ball.GetRadius();
+        auto pos = ball->GetPosition();
+        auto vel = ball->GetVelocity();
+        float r  = ball->GetRadius();
         bool hit = false;
 
         if (pos.x - r <= 0.0f)
@@ -62,33 +62,33 @@ void CollisionSystem::_handleWallCollisions(std::span<Ball> balls) const
         }
         else if (pos.y + r >= g_WindowHeight)
         {
-            ball.SetPosition(pos);
-            ball.SetVelocity(vel);
-            Game::Get()->GetEventBus().Publish(BallLostEvent{ball});
+            ball->SetPosition(pos);
+            ball->SetVelocity(vel);
+            Game::Get()->GetEventBus().Publish(BallLostEvent{ball->GetUUID()});
             return;
         }
 
-        ball.SetPosition(pos);
-        ball.SetVelocity(vel);
+        ball->SetPosition(pos);
+        ball->SetVelocity(vel);
 
         if (hit)
-            Game::Get()->GetEventBus().Publish(BallHitWallEvent{ball});
+            Game::Get()->GetEventBus().Publish(BallHitWallEvent{ball->GetUUID()});
     }
 }
 
-void CollisionSystem::_handlePaddleCollision(std::span<Ball> balls, const Paddle& paddle) const
+void CollisionSystem::_handlePaddleCollision(std::span<Ball*> balls, const Paddle& paddle) const
 {
     auto paddlePos  = paddle.GetPosition();
     auto paddleSize = paddle.GetSize();
 
-    for (auto& ball : balls)
+    for (auto* ball : balls)
     {
-        if (ball.IsAttached())
+        if (!ball || ball->IsAttached())
             continue;
 
-        auto ballPos = ball.GetPosition();
-        auto ballVel = ball.GetVelocity();
-        float r      = ball.GetRadius();
+        auto ballPos = ball->GetPosition();
+        auto ballVel = ball->GetVelocity();
+        float r      = ball->GetRadius();
 
         if (ballVel.y <= 0.0f)
             continue;
@@ -108,24 +108,24 @@ void CollisionSystem::_handlePaddleCollision(std::span<Ball> balls, const Paddle
         ballVel.y = -speed * std::cos(angle);
 
         ballPos.y = paddlePos.y - r;
-        ball.SetVelocity(ballVel);
+        ball->SetVelocity(ballVel);
 
-        Game::Get()->GetEventBus().Publish(BallHitPaddleEvent{ball, paddle});
+        Game::Get()->GetEventBus().Publish(BallHitPaddleEvent{ball->GetUUID()});
     }
 }
 
-void CollisionSystem::_handleBrickCollisions(std::span<Ball> balls, std::span<std::unique_ptr<Brick>> bricks) const
+void CollisionSystem::_handleBrickCollisions(std::span<Ball*> balls, std::span<Brick*> bricks) const
 {
-    for (auto& ball : balls)
+    for (auto* ball : balls)
     {
-        if (ball.IsAttached())
+        if (!ball || ball->IsAttached())
             continue;
 
-        auto ballPos = ball.GetPosition();
-        auto ballVel = ball.GetVelocity();
-        float r      = ball.GetRadius();
+        auto ballPos = ball->GetPosition();
+        auto ballVel = ball->GetVelocity();
+        float r      = ball->GetRadius();
 
-        for (auto& brick : bricks)
+        for (auto* brick : bricks)
         {
             if (!brick || !brick->IsAlive())
                 continue;
@@ -161,22 +161,22 @@ void CollisionSystem::_handleBrickCollisions(std::span<Ball> balls, std::span<st
                 ballPos.y += (overlapTop < overlapBottom) ? -offset : offset;
             }
 
-            ball.SetPosition(ballPos);
-            ball.SetVelocity(ballVel);
+            ball->SetPosition(ballPos);
+            ball->SetVelocity(ballVel);
 
-            Game::Get()->GetEventBus().Publish(BallHitBrickEvent{ball, *brick});
+            Game::Get()->GetEventBus().Publish(BallHitBrickEvent{ball->GetUUID(), brick->GetUUID()});
             break;
         }
     }
 }
 
-void CollisionSystem::_handleAbilityCollisions(std::span<std::unique_ptr<Ability>> abilities,
+void CollisionSystem::_handleAbilityCollisions(std::span<Ability*> abilities,
                                                const Paddle& paddle) const
 {
     auto paddlePos  = paddle.GetPosition();
     auto paddleSize = paddle.GetSize();
 
-    for (auto& ability : abilities)
+    for (auto* ability : abilities)
     {
         if (!ability || !ability->IsAlive())
             continue;
@@ -186,14 +186,14 @@ void CollisionSystem::_handleAbilityCollisions(std::span<std::unique_ptr<Ability
 
         if (_AABBOverlap(paddlePos, paddleSize, abilityPos, abilitySize))
         {
-            Game::Get()->GetEventBus().Publish(AbilityPickedUpEvent{*ability});
+            Game::Get()->GetEventBus().Publish(AbilityPickedUpEvent{ability->GetUUID()});
         }
     }
 }
 
-void CollisionSystem::_handleAbilityBottomCollision(std::span<std::unique_ptr<Ability>> abilities) const
+void CollisionSystem::_handleAbilityBottomCollision(std::span<Ability*> abilities) const
 {
-    for (auto& ability : abilities)
+    for (auto* ability : abilities)
     {
         if (!ability || !ability->IsAlive())
             continue;
@@ -201,7 +201,7 @@ void CollisionSystem::_handleAbilityBottomCollision(std::span<std::unique_ptr<Ab
         auto pos = ability->GetPosition();
 
         if (pos.y > g_WindowHeight)
-            Game::Get()->GetEventBus().Publish(AbilityFallOutOfBoundsEvent{*ability});
+            Game::Get()->GetEventBus().Publish(AbilityFallOutOfBoundsEvent{ability->GetUUID()});
     }
 }
 
