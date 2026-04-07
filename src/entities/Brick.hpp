@@ -25,8 +25,6 @@ public:
 protected:
     bool      m_IsAlive;
     sf::Color m_Color;
-
-    static sf::Color ColorFromIndex(int colorIndex);
 };
 
 } // namespace Breakout
