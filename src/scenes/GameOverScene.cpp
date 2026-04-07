@@ -2,6 +2,8 @@
 #include "core/Game.hpp"
 #include "core/Constants.hpp"
 #include "scenes/MenuScene.hpp"
+#include "managers/ScoreManager.hpp"
+#include "systems/AudioSystem.hpp"
 
 #include <string>
 

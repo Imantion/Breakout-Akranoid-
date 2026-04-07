@@ -4,17 +4,17 @@
 #include <memory>
 
 #include "core/GameSession.hpp"
-#include "events/EventBus.hpp"
-#include "managers/TextureManager.hpp"
-#include "managers/ScoreManager.hpp"
-#include "levels/LevelLoader.hpp"
-#include "systems/RenderSystem.hpp"
-#include "systems/AudioSystem.hpp"
 
 namespace Breakout
 {
 
 class Scene;
+class EventBus;
+class TextureManager;
+class ScoreManager;
+class LevelLoader;
+class RenderSystem;
+class AudioSystem;
 
 class Game
 {
@@ -49,12 +49,12 @@ private:
 
     sf::RenderWindow          m_Window;
     sf::Font                  m_Font;
-    EventBus                  m_EventBus;
-    TextureManager            m_TextureManager;
-    ScoreManager              m_ScoreManager;
-    LevelLoader               m_LevelLoader;
-    RenderSystem              m_RenderSystem;
-    AudioSystem               m_AudioSystem;
+    std::unique_ptr<EventBus>                  m_EventBus;
+    std::unique_ptr<TextureManager>            m_TextureManager;
+    std::unique_ptr<ScoreManager>              m_ScoreManager;
+    std::unique_ptr<LevelLoader>               m_LevelLoader;
+    std::unique_ptr<RenderSystem>              m_RenderSystem;
+    std::unique_ptr<AudioSystem>               m_AudioSystem;
 
     GameSession               m_Session;
 
