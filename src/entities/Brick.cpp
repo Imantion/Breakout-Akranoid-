@@ -2,6 +2,7 @@
 
 #include "core/Game.hpp"
 #include "events/Events.hpp"
+#include "events/EventBus.hpp"
 
 namespace Breakout
 {

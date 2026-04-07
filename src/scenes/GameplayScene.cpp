@@ -5,6 +5,11 @@
 #include "core/GameplayContext.hpp"
 #include "scenes/MenuScene.hpp"
 #include "entities/AbilityFactory.hpp"
+#include "managers/ScoreManager.hpp"
+#include "systems/AudioSystem.hpp"
+#include "events/EventBus.hpp"
+#include "managers/TextureManager.hpp"
+
 
 #include <algorithm>
 #include <cmath>

@@ -3,6 +3,8 @@
 #include "InvulnerableBrick.hpp"
 #include "core/Constants.hpp"
 #include "core/Game.hpp"
+#include "managers/TextureManager.hpp"
+
 
 namespace Breakout
 {

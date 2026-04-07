@@ -7,6 +7,13 @@
 #include "scenes/GameOverScene.hpp"
 #include "scenes/WinScene.hpp"
 
+#include "events/EventBus.hpp"
+#include "managers/TextureManager.hpp"
+#include "managers/ScoreManager.hpp"
+#include "levels/LevelLoader.hpp"
+#include "systems/RenderSystem.hpp"
+#include "systems/AudioSystem.hpp"
+
 namespace Breakout
 {
 
@@ -14,14 +21,14 @@ Game* Game::s_Instance = nullptr;
 
 Game::Game()
     : m_Window(sf::VideoMode({g_WindowWidth, g_WindowHeight}), g_WindowTitle)
-    , m_Font(g_FontFile)
+	, m_Font(g_FontFile), m_TextureManager(), m_ScoreManager(), m_LevelLoader(), m_RenderSystem(), m_AudioSystem()
 {
     s_Instance = this;
     m_Window.setFramerateLimit(0);
-    m_TextureManager.LoadAll(g_DataDirectory);
-    m_AudioSystem.LoadAll(g_AudioDirectory);
-    m_LevelLoader.LoadCampaign(g_CampaignFile);
-    m_ScoreManager.Load(g_ScoresFile);
+    m_TextureManager->LoadAll(g_DataDirectory);
+    m_AudioSystem->LoadAll(g_AudioDirectory);
+    m_LevelLoader->LoadCampaign(g_CampaignFile);
+    m_ScoreManager->Load(g_ScoresFile);
 
     SetScene(std::make_unique<MenuScene>());
 }
@@ -48,7 +55,7 @@ void Game::SetScene(std::unique_ptr<Scene> scene)
 void Game::StartCampaign()
 {
     m_Session = GameSession{};
-    auto bricks = m_LevelLoader.LoadLevel(0);
+    auto bricks = m_LevelLoader->LoadLevel(0);
     SetScene(std::make_unique<GameplayScene>(std::move(bricks)));
 }
 
@@ -56,10 +63,10 @@ void Game::OnLevelComplete(int score)
 {
     m_Session.score = score;
 
-    m_ScoreManager.AddScore(m_Session.currentLevelIndex, g_DefaultPlayerName, score);
-    m_ScoreManager.Save(g_ScoresFile);
+    m_ScoreManager->AddScore(m_Session.currentLevelIndex, g_DefaultPlayerName, score);
+    m_ScoreManager->Save(g_ScoresFile);
 
-    if (m_LevelLoader.HasNextLevel(m_Session.currentLevelIndex))
+    if (m_LevelLoader->HasNextLevel(m_Session.currentLevelIndex))
     {
         SetScene(std::make_unique<LevelCompleteScene>(score));
     }
@@ -72,41 +79,41 @@ void Game::OnLevelComplete(int score)
 void Game::OnGameOver(int score)
 {
     m_Session.score = score;
-    m_ScoreManager.AddScore(m_Session.currentLevelIndex, g_DefaultPlayerName, score);
-    m_ScoreManager.Save(g_ScoresFile);
+    m_ScoreManager->AddScore(m_Session.currentLevelIndex, g_DefaultPlayerName, score);
+    m_ScoreManager->Save(g_ScoresFile);
     SetScene(std::make_unique<GameOverScene>(score));
 }
 
 void Game::LoadNextLevel()
 {
     m_Session.currentLevelIndex++;
-    auto bricks = m_LevelLoader.LoadLevel(m_Session.currentLevelIndex);
+    auto bricks = m_LevelLoader->LoadLevel(m_Session.currentLevelIndex);
     SetScene(std::make_unique<GameplayScene>(std::move(bricks)));
 }
 
 EventBus& Game::GetEventBus()
 {
-    return m_EventBus;
+    return *m_EventBus;
 }
 
 TextureManager& Game::GetTextureManager()
 {
-    return m_TextureManager;
+    return *m_TextureManager;
 }
 
 ScoreManager& Game::GetScoreManager()
 {
-    return m_ScoreManager;
+    return *m_ScoreManager;
 }
 
 RenderSystem& Game::GetRenderSystem()
 {
-    return m_RenderSystem;
+    return *m_RenderSystem;
 }
 
 AudioSystem& Game::GetAudioSystem()
 {
-    return m_AudioSystem;
+    return *m_AudioSystem;
 }
 
 const GameSession& Game::GetSession() const
@@ -136,8 +143,8 @@ void Game::Run()
             if (m_CurrentScene)
                 m_CurrentScene->OnExit();
 
-            m_EventBus.Clear();
-            m_AudioSystem.SubscribeToEvents();
+            m_EventBus->Clear();
+            m_AudioSystem->SubscribeToEvents();
             m_CurrentScene = std::move(m_PendingScene);
             m_CurrentScene->OnEnter();
         }
@@ -152,13 +159,13 @@ void Game::Run()
             while (accumulator >= g_FixedTimeStep)
             {
                 m_CurrentScene->Update(g_FixedTimeStep);
-                m_EventBus.FlushEvents();
+                m_EventBus->FlushEvents();
                 accumulator -= g_FixedTimeStep;
             }
 
-            m_RenderSystem.BeginFrame(m_Window);
-            m_CurrentScene->Render(m_RenderSystem, m_Window);
-            m_RenderSystem.EndFrame(m_Window);
+            m_RenderSystem->BeginFrame(m_Window);
+            m_CurrentScene->Render(*m_RenderSystem, m_Window);
+            m_RenderSystem->EndFrame(m_Window);
         }
     }
 }
