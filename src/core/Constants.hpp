@@ -63,7 +63,7 @@ namespace Breakout
 
 	// Audio
 	constexpr char  g_AudioDirectory[] = "data/audio";
-	constexpr float g_DefaultMusicVolume = 50.0f;
+	constexpr float g_DefaultMusicVolume = 30.0f;
 	constexpr float g_DefaultSoundVolume = 100.0f;
 
 	constexpr char g_MenuMusicFile[] = "data/audio/menu_music.ogg";
