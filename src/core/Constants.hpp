@@ -56,6 +56,7 @@ constexpr float g_AbilityFallSpeed     = 150.0f;
 constexpr float g_AbilitySpawnChance   = 0.2f;
 constexpr float g_WidePaddleDuration   = 8.0f;
 constexpr float g_WidePaddleMultiplier = 1.5f;
+constexpr float g_ShortPaddleMultiplier = 0.5f;
 
 // Aim line
 constexpr float g_AimLineLength = 80.0f;
@@ -84,6 +85,7 @@ constexpr char g_TexBrickInvulnerable[] = "brick_invulnerable";
 constexpr char g_TexMultiBall[]        = "multi_ball";
 constexpr char g_TexExtraLife[]        = "hp";
 constexpr char g_TexWidePaddle[]       = "wide_paddle";
+constexpr char g_TexShortPaddle[]       = "short_paddle";
 
 // UI colors
 constexpr uint8_t g_BgColorR = 30, g_BgColorG = 30, g_BgColorB = 46;

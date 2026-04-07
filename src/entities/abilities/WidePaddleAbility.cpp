@@ -6,21 +6,22 @@
 namespace Breakout
 {
 
-WidePaddleAbility::WidePaddleAbility(const sf::Texture& texture, sf::Vector2f position, float size)
+WidePaddleAbility::WidePaddleAbility(const sf::Texture& texture, float widthMultiplier, sf::Vector2f position, float size)
     : Ability(texture, position, size)
 {
+	m_WidthMultiplier = widthMultiplier;
 }
 
 void WidePaddleAbility::Apply(GameplayContext& context)
 {
     float originalWidth = g_PaddleWidth;
-    float wideWidth     = g_PaddleWidth * g_WidePaddleMultiplier;
+    float modifiedWidth     = g_PaddleWidth * m_WidthMultiplier;
     Paddle& paddle      = context.paddle;
 
     context.scene.AddEffect(
         EffectType::WidePaddle,
         g_WidePaddleDuration,
-        [&paddle, wideWidth]()     { paddle.SetWidth(wideWidth); },
+        [&paddle, modifiedWidth]()     { paddle.SetWidth(modifiedWidth); },
         [&paddle, originalWidth]() { paddle.SetWidth(originalWidth); });
 }
 

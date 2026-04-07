@@ -14,12 +14,14 @@ void EffectManager::PushEffect(EffectType type, float duration,
 
     if (it != m_ActiveEffects.end())
     {
-        it->remainingTime = duration;
-        return;
+		*it = { type, duration, std::move(onExpire) };
+    }
+    else
+    {
+        m_ActiveEffects.push_back({ type, duration, std::move(onExpire) });
     }
 
     onApply();
-    m_ActiveEffects.push_back({type, duration, std::move(onExpire)});
 }
 
 void EffectManager::Update(float dt)

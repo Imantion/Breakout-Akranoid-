@@ -27,7 +27,14 @@ std::unique_ptr<Ability> AbilityFactory::CreateExtraLife(sf::Vector2f position)
 std::unique_ptr<Ability> AbilityFactory::CreateWidePaddle(sf::Vector2f position)
 {
     return std::make_unique<WidePaddleAbility>(
-        Game::Get()->GetTextureManager().GetTexture(g_TexWidePaddle),
+        Game::Get()->GetTextureManager().GetTexture(g_TexWidePaddle), g_WidePaddleMultiplier,
+        position, g_AbilitySize);
+}
+
+std::unique_ptr<Ability> AbilityFactory::CreateShortPaddle(sf::Vector2f position)
+{
+    return std::make_unique<WidePaddleAbility>(
+        Game::Get()->GetTextureManager().GetTexture(g_TexShortPaddle), g_ShortPaddleMultiplier,
         position, g_AbilitySize);
 }
 
@@ -39,7 +46,8 @@ std::unique_ptr<Ability> AbilityFactory::CreateRandom(sf::Vector2f position)
     static constexpr CreateFn factories[] = {
         &CreateMultiBall,
         &CreateExtraLife,
-        &CreateWidePaddle
+        &CreateWidePaddle,
+		&CreateShortPaddle
     };
 
     std::uniform_int_distribution<int> dist(0, std::size(factories) - 1);
