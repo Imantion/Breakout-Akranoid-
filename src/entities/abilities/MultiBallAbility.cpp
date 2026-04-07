@@ -14,7 +14,7 @@ void MultiBallAbility::Apply(GameplayContext& context)
 {
     context.scene.AddBall(
         context.paddle.GetPosition(),
-        sf::Vector2f{g_BallSpeed * 0.7f, -g_BallSpeed * 0.7f});
+        sf::Vector2f{g_BallSpeed * g_BallSpeedDiagonalFactor, -g_BallSpeed * g_BallSpeedDiagonalFactor});
 }
 
 } // namespace Breakout

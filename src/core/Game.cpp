@@ -19,6 +19,7 @@ Game::Game()
     s_Instance = this;
     m_Window.setFramerateLimit(0);
     m_TextureManager.LoadAll(g_DataDirectory);
+    m_AudioSystem.LoadAll(g_AudioDirectory);
     m_LevelLoader.LoadCampaign(g_CampaignFile);
     m_ScoreManager.Load(g_ScoresFile);
 
@@ -55,7 +56,7 @@ void Game::OnLevelComplete(int score)
 {
     m_Session.score = score;
 
-    m_ScoreManager.AddScore(m_Session.currentLevelIndex, "Player", score);
+    m_ScoreManager.AddScore(m_Session.currentLevelIndex, g_DefaultPlayerName, score);
     m_ScoreManager.Save(g_ScoresFile);
 
     if (m_LevelLoader.HasNextLevel(m_Session.currentLevelIndex))
@@ -71,7 +72,7 @@ void Game::OnLevelComplete(int score)
 void Game::OnGameOver(int score)
 {
     m_Session.score = score;
-    m_ScoreManager.AddScore(m_Session.currentLevelIndex, "Player", score);
+    m_ScoreManager.AddScore(m_Session.currentLevelIndex, g_DefaultPlayerName, score);
     m_ScoreManager.Save(g_ScoresFile);
     SetScene(std::make_unique<GameOverScene>(score));
 }
@@ -103,6 +104,11 @@ RenderSystem& Game::GetRenderSystem()
     return m_RenderSystem;
 }
 
+AudioSystem& Game::GetAudioSystem()
+{
+    return m_AudioSystem;
+}
+
 const GameSession& Game::GetSession() const
 {
     return m_Session;
@@ -131,6 +137,7 @@ void Game::Run()
                 m_CurrentScene->OnExit();
 
             m_EventBus.Clear();
+            m_AudioSystem.SubscribeToEvents();
             m_CurrentScene = std::move(m_PendingScene);
             m_CurrentScene->OnEnter();
         }

@@ -9,6 +9,7 @@
 #include "managers/ScoreManager.hpp"
 #include "levels/LevelLoader.hpp"
 #include "systems/RenderSystem.hpp"
+#include "systems/AudioSystem.hpp"
 
 namespace Breakout
 {
@@ -38,6 +39,7 @@ public:
     TextureManager&       GetTextureManager();
     ScoreManager&         GetScoreManager();
     RenderSystem&         GetRenderSystem();
+    AudioSystem&          GetAudioSystem();
     const GameSession&    GetSession() const;
     const sf::Font&       GetFont() const;
     sf::RenderWindow&     GetWindow();
@@ -52,6 +54,7 @@ private:
     ScoreManager              m_ScoreManager;
     LevelLoader               m_LevelLoader;
     RenderSystem              m_RenderSystem;
+    AudioSystem               m_AudioSystem;
 
     GameSession               m_Session;
 

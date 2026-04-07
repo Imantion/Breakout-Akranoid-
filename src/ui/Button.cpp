@@ -1,4 +1,5 @@
 #include "Button.hpp"
+#include "core/Constants.hpp"
 
 namespace Breakout
 {
@@ -8,7 +9,7 @@ Button::Button(const sf::Font& font, const std::string& text, unsigned int size,
     : m_Text(font, text, size)
     , m_OnClick(std::move(onClick))
     , m_IsHovered(false)
-    , m_NormalColor(sf::Color(200, 200, 200))
+    , m_NormalColor(sf::Color(g_BtnNormalGray, g_BtnNormalGray, g_BtnNormalGray))
     , m_HoverColor(sf::Color::White)
 {
     m_Text.setFillColor(m_NormalColor);

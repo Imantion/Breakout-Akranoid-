@@ -9,24 +9,29 @@ namespace Breakout
 
 MenuScene::MenuScene()
     : m_Title(Game::Get()->GetFont(), "BREAKOUT", g_TitleFontSize,
-              {0.0f, g_WindowHeight * 0.2f}, sf::Color(255, 200, 60))
+              {0.0f, g_WindowHeight * g_LayoutTitleY}, sf::Color(g_TitleColorR, g_TitleColorG, g_TitleColorB))
     , m_TotalScoreLabel(Game::Get()->GetFont(),
                        "Total Score: " + std::to_string(Game::Get()->GetScoreManager().GetTotalScore()),
-                       g_HudFontSize, {0.0f, g_WindowHeight * 0.38f}, sf::Color(180, 180, 180))
+                       g_HudFontSize, {0.0f, g_WindowHeight * g_LayoutSubtitleY}, sf::Color(180, 180, 180))
 {
     m_Title.CenterHorizontally(g_WindowWidth);
     m_TotalScoreLabel.CenterHorizontally(g_WindowWidth);
 
     m_Buttons.emplace_back(Game::Get()->GetFont(), "Play", g_MenuFontSize,
-                           sf::Vector2f{0.0f, g_WindowHeight * 0.5f},
+                           sf::Vector2f{0.0f, g_WindowHeight * g_LayoutButton1Y},
                            []() { Game::Get()->StartCampaign(); });
 
     m_Buttons.emplace_back(Game::Get()->GetFont(), "Quit", g_MenuFontSize,
-                           sf::Vector2f{0.0f, g_WindowHeight * 0.6f},
+                           sf::Vector2f{0.0f, g_WindowHeight * g_LayoutButton2Y},
                            []() { Game::Get()->GetWindow().close(); });
 
     for (auto& button : m_Buttons)
         button.CenterHorizontally(g_WindowWidth);
+}
+
+void MenuScene::OnEnter()
+{
+    Game::Get()->GetAudioSystem().PlayMusic(g_MenuMusicFile);
 }
 
 void MenuScene::ProcessInput(sf::RenderWindow& window)

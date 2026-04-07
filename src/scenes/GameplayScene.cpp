@@ -28,13 +28,13 @@ GameplayScene::GameplayScene(std::vector<std::unique_ptr<Brick>> bricks)
     m_Registry.reserve(bricks.size() + 2); // +2 for paddle and ball
 
     m_Paddle = _registerActor(std::make_unique<Paddle>(
-        texMgr.GetTexture("paddle"),
+        texMgr.GetTexture(g_TexPaddle),
         sf::Vector2f{g_WindowWidth / 2.0f - g_PaddleWidth / 2.0f,
                      g_WindowHeight - g_PaddleHeight - g_PaddleBottomMargin},
         g_PaddleWidth, g_PaddleHeight));
 
     auto* ball = _registerActor(std::make_unique<Ball>(
-        texMgr.GetTexture("ball"),
+        texMgr.GetTexture(g_TexBall),
         sf::Vector2f{g_WindowWidth / 2.0f, g_WindowHeight / 2.0f},
         g_BallRadius));
     m_Balls.push_back(ball);
@@ -47,13 +47,14 @@ GameplayScene::GameplayScene(std::vector<std::unique_ptr<Brick>> bricks)
             m_Bricks.push_back(rawBrick);
     }
 
-    float livesX = g_WindowWidth - g_HudMargin - 120.0f;
+    float livesX = g_WindowWidth - g_HudMargin - g_LivesLabelRightOffset;
     m_LivesLabel.SetPosition({livesX, g_HudMargin});
 }
 
 void GameplayScene::OnEnter()
 {
     _subscribeEvents();
+    Game::Get()->GetAudioSystem().PlayMusic(g_GameplayMusicFile);
 }
 
 void GameplayScene::OnExit()
@@ -122,7 +123,7 @@ void GameplayScene::AddBall(sf::Vector2f position, sf::Vector2f velocity)
 {
     auto& texMgr = Game::Get()->GetTextureManager();
     auto* ball = _registerActor(std::make_unique<Ball>(
-        texMgr.GetTexture("ball"), position, g_BallRadius));
+        texMgr.GetTexture(g_TexBall), position, g_BallRadius));
     ball->SetVelocity(velocity);
     m_Balls.push_back(ball);
 }

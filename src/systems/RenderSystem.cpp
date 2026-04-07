@@ -1,11 +1,12 @@
 #include "RenderSystem.hpp"
+#include "core/Constants.hpp"
 
 namespace Breakout
 {
 
 void RenderSystem::BeginFrame(sf::RenderWindow& window)
 {
-    window.clear(sf::Color(30, 30, 46));
+    window.clear(sf::Color(g_BgColorR, g_BgColorG, g_BgColorB));
 }
 
 void RenderSystem::EndFrame(sf::RenderWindow& window)

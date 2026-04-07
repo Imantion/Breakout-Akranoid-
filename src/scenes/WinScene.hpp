@@ -15,6 +15,8 @@ class WinScene : public Scene
 public:
     explicit WinScene(int finalScore);
 
+    void OnEnter() override;
+
     void ProcessInput(sf::RenderWindow& window) override;
     void Update(float dt) override;
     void Render(RenderSystem& renderer, sf::RenderWindow& window) override;

@@ -13,21 +13,21 @@ namespace Breakout
 std::unique_ptr<Ability> AbilityFactory::CreateMultiBall(sf::Vector2f position)
 {
     return std::make_unique<MultiBallAbility>(
-        Game::Get()->GetTextureManager().GetTexture("multi_ball"),
+        Game::Get()->GetTextureManager().GetTexture(g_TexMultiBall),
         position, g_AbilitySize);
 }
 
 std::unique_ptr<Ability> AbilityFactory::CreateExtraLife(sf::Vector2f position)
 {
     return std::make_unique<ExtraLifeAbility>(
-        Game::Get()->GetTextureManager().GetTexture("hp"),
+        Game::Get()->GetTextureManager().GetTexture(g_TexExtraLife),
         position, g_AbilitySize);
 }
 
 std::unique_ptr<Ability> AbilityFactory::CreateWidePaddle(sf::Vector2f position)
 {
     return std::make_unique<WidePaddleAbility>(
-        Game::Get()->GetTextureManager().GetTexture("wide_paddle"),
+        Game::Get()->GetTextureManager().GetTexture(g_TexWidePaddle),
         position, g_AbilitySize);
 }
 

@@ -10,26 +10,26 @@ namespace Breakout
 
 LevelCompleteScene::LevelCompleteScene(int currentScore)
     : m_Title(Game::Get()->GetFont(), "LEVEL COMPLETE", g_TitleFontSize,
-              {0.0f, g_WindowHeight * 0.12f}, sf::Color(100, 200, 255))
+              {0.0f, g_WindowHeight * g_LayoutEndTitleY}, sf::Color(g_LevelCompleteColorR, g_LevelCompleteColorG, g_LevelCompleteColorB))
     , m_ScoreLabel(Game::Get()->GetFont(),
                    "Score: " + std::to_string(currentScore), g_MenuFontSize,
-                   {0.0f, g_WindowHeight * 0.35f}, sf::Color::White)
+                   {0.0f, g_WindowHeight * g_LayoutEndScoreY}, sf::Color::White)
     , m_BestScoreLabel(Game::Get()->GetFont(),
                        "Level Best: " + std::to_string(
                            Game::Get()->GetScoreManager().GetBestScore(
                                Game::Get()->GetSession().currentLevelIndex)),
-                       g_HudFontSize, {0.0f, g_WindowHeight * 0.43f}, sf::Color(180, 180, 180))
+                       g_HudFontSize, {0.0f, g_WindowHeight * g_LayoutEndBestY}, sf::Color(180, 180, 180))
 {
     m_Title.CenterHorizontally(g_WindowWidth);
     m_ScoreLabel.CenterHorizontally(g_WindowWidth);
     m_BestScoreLabel.CenterHorizontally(g_WindowWidth);
 
     m_Buttons.emplace_back(Game::Get()->GetFont(), "Next Level", g_MenuFontSize,
-                           sf::Vector2f{0.0f, g_WindowHeight * 0.55f},
+                           sf::Vector2f{0.0f, g_WindowHeight * g_LayoutEndButton1Y},
                            []() { Game::Get()->LoadNextLevel(); });
 
     m_Buttons.emplace_back(Game::Get()->GetFont(), "Main Menu", g_MenuFontSize,
-                           sf::Vector2f{0.0f, g_WindowHeight * 0.65f},
+                           sf::Vector2f{0.0f, g_WindowHeight * g_LayoutEndButton2Y},
                            []() { Game::Get()->SetScene(std::make_unique<MenuScene>()); });
 
     for (auto& button : m_Buttons)

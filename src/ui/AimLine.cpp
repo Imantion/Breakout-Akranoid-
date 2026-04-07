@@ -24,8 +24,8 @@ void AimLine::Update(sf::Vector2f origin, sf::Vector2f target)
     float clampedLength = std::min(length, g_AimLineLength);
     sf::Vector2f endpoint = origin + dir * clampedLength;
 
-    m_Line[0] = sf::Vertex{.position = origin,   .color = sf::Color(255, 255, 255, 120)};
-    m_Line[1] = sf::Vertex{.position = endpoint, .color = sf::Color(255, 255, 255, 40)};
+    m_Line[0] = sf::Vertex{.position = origin,   .color = sf::Color(255, 255, 255, g_AimLineAlphaStart)};
+    m_Line[1] = sf::Vertex{.position = endpoint, .color = sf::Color(255, 255, 255, g_AimLineAlphaEnd)};
 }
 
 void AimLine::SetVisibility(bool visible)

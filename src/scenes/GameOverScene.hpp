@@ -15,6 +15,8 @@ class GameOverScene : public Scene
 public:
     explicit GameOverScene(int finalScore);
 
+    void OnEnter() override;
+
     void ProcessInput(sf::RenderWindow& window) override;
     void Update(float dt) override;
     void Render(RenderSystem& renderer, sf::RenderWindow& window) override;
