@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{7dc6f896-5224-429c-904b-c4f45a26b3cd}</ProjectGuid>
+    <RootNamespace>breakout</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp23</LanguageStandard>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)SFML-3.0.2\include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)SFML-3.0.2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-audio-d.lib 
+;sfml-network-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>if not exist "$(OutDir)sfml-graphics-d-3.dll" copy "$(ProjectDir)SFML-3.0.2\bin\sfml-graphics-d-3.dll" "$(OutDir)"
+    if not exist "$(OutDir)sfml-window-d-3.dll"   copy "$(ProjectDir)SFML-3.0.2\bin\sfml-window-d-3.dll" "$(OutDir)"
+    if not exist "$(OutDir)sfml-system-d-3.dll"   copy "$(ProjectDir)SFML-3.0.2\bin\sfml-system-d-3.dll" "$(OutDir)"
+    if not exist "$(OutDir)sfml-audio-d-3.dll"    copy "$(ProjectDir)SFML-3.0.2\bin\sfml-audio-d-3.dll" "$(OutDir)"
+    if not exist "$(OutDir)sfml-network-d-3.dll"  copy "$(ProjectDir)SFML-3.0.2\bin\sfml-network-d-3.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)src;$(ProjectDir)SFML-3.0.2\include</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp23</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)SFML-3.0.2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;sfml-audio.lib;sfml-network.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <PostBuildEvent>
+      <Command>if not exist "$(OutDir)sfml-graphics-3.dll" copy "$(ProjectDir)SFML-3.0.2\bin\sfml-graphics-3.dll" "$(OutDir)"
+    if not exist "$(OutDir)sfml-window-3.dll"   copy "$(ProjectDir)SFML-3.0.2\bin\sfml-window-3.dll" "$(OutDir)"
+    if not exist "$(OutDir)sfml-system-3.dll"   copy "$(ProjectDir)SFML-3.0.2\bin\sfml-system-3.dll" "$(OutDir)"
+    if not exist "$(OutDir)sfml-audio-3.dll"    copy "$(ProjectDir)SFML-3.0.2\bin\sfml-audio-3.dll" "$(OutDir)"
+    if not exist "$(OutDir)sfml-network-3.dll"  copy "$(ProjectDir)SFML-3.0.2\bin\sfml-network-3.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="src\core\Constants.hpp" />
+    <ClInclude Include="src\core\EntityUUID.hpp" />
+    <ClInclude Include="src\core\Game.hpp" />
+    <ClInclude Include="src\core\GameplayContext.hpp" />
+    <ClInclude Include="src\core\GameSession.hpp" />
+    <ClInclude Include="src\entities\abilities\ExtraLifeAbility.hpp" />
+    <ClInclude Include="src\entities\abilities\MultiBallAbility.hpp" />
+    <ClInclude Include="src\entities\abilities\WidePaddleAbility.hpp" />
+    <ClInclude Include="src\entities\Ability.hpp" />
+    <ClInclude Include="src\entities\AbilityFactory.hpp" />
+    <ClInclude Include="src\entities\Actor.hpp" />
+    <ClInclude Include="src\entities\Ball.hpp" />
+    <ClInclude Include="src\entities\Brick.hpp" />
+    <ClInclude Include="src\entities\BrickFactory.hpp" />
+    <ClInclude Include="src\entities\DestructibleBrick.hpp" />
+    <ClInclude Include="src\entities\InvulnerableBrick.hpp" />
+    <ClInclude Include="src\entities\Paddle.hpp" />
+    <ClInclude Include="src\events\EventBus.hpp" />
+    <ClInclude Include="src\events\Events.hpp" />
+    <ClInclude Include="src\levels\LevelData.hpp" />
+    <ClInclude Include="src\levels\LevelLoader.hpp" />
+    <ClInclude Include="src\managers\ScoreManager.hpp" />
+    <ClInclude Include="src\managers\TextureManager.hpp" />
+    <ClInclude Include="src\scenes\GameOverScene.hpp" />
+    <ClInclude Include="src\scenes\GameplayScene.hpp" />
+    <ClInclude Include="src\scenes\LevelCompleteScene.hpp" />
+    <ClInclude Include="src\scenes\MenuScene.hpp" />
+    <ClInclude Include="src\scenes\Scene.hpp" />
+    <ClInclude Include="src\scenes\WinScene.hpp" />
+    <ClInclude Include="src\systems\AudioSystem.hpp" />
+    <ClInclude Include="src\systems\CollisionSystem.hpp" />
+    <ClInclude Include="src\systems\EffectManager.hpp" />
+    <ClInclude Include="src\systems\MovementSystem.hpp" />
+    <ClInclude Include="src\systems\PaddleController.hpp" />
+    <ClInclude Include="src\systems\RenderSystem.hpp" />
+    <ClInclude Include="src\ui\AimLine.hpp" />
+    <ClInclude Include="src\ui\Button.hpp" />
+    <ClInclude Include="src\ui\Label.hpp" />
+    <ClInclude Include="src\utils\robin_hood.hpp" />
+    <ClInclude Include="src\utils\uuid.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\core\Game.cpp" />
+    <ClCompile Include="src\entities\abilities\ExtraLifeAbility.cpp" />
+    <ClCompile Include="src\entities\abilities\MultiBallAbility.cpp" />
+    <ClCompile Include="src\entities\abilities\WidePaddleAbility.cpp" />
+    <ClCompile Include="src\entities\Ability.cpp" />
+    <ClCompile Include="src\entities\AbilityFactory.cpp" />
+    <ClCompile Include="src\entities\Actor.cpp" />
+    <ClCompile Include="src\entities\Ball.cpp" />
+    <ClCompile Include="src\entities\Brick.cpp" />
+    <ClCompile Include="src\entities\BrickFactory.cpp" />
+    <ClCompile Include="src\entities\DestructibleBrick.cpp" />
+    <ClCompile Include="src\entities\InvulnerableBrick.cpp" />
+    <ClCompile Include="src\entities\Paddle.cpp" />
+    <ClCompile Include="src\levels\LevelLoader.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\managers\ScoreManager.cpp" />
+    <ClCompile Include="src\managers\TextureManager.cpp" />
+    <ClCompile Include="src\scenes\GameOverScene.cpp" />
+    <ClCompile Include="src\scenes\GameplayScene.cpp" />
+    <ClCompile Include="src\scenes\LevelCompleteScene.cpp" />
+    <ClCompile Include="src\scenes\MenuScene.cpp" />
+    <ClCompile Include="src\scenes\WinScene.cpp" />
+    <ClCompile Include="src\systems\AudioSystem.cpp" />
+    <ClCompile Include="src\systems\CollisionSystem.cpp" />
+    <ClCompile Include="src\systems\EffectManager.cpp" />
+    <ClCompile Include="src\systems\MovementSystem.cpp" />
+    <ClCompile Include="src\systems\PaddleController.cpp" />
+    <ClCompile Include="src\systems\RenderSystem.cpp" />
+    <ClCompile Include="src\ui\AimLine.cpp" />
+    <ClCompile Include="src\ui\Button.cpp" />
+    <ClCompile Include="src\ui\Label.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".gitignore" />
+    <None Include="data\audio\ability_pickup.ogg" />
+    <None Include="data\audio\gameplay_music.ogg" />
+    <None Include="data\audio\lose.ogg" />
+    <None Include="data\audio\menu_music.ogg" />
+    <None Include="data\audio\win.ogg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="data\asd.ttf" />
+    <Font Include="data\font.ttf" />
+    <Font Include="data\sad.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="data\ball.png" />
+    <Image Include="data\brick.png" />
+    <Image Include="data\brick_cracked.png" />
+    <Image Include="data\brick_invulnerable.png" />
+    <Image Include="data\brick_other.png" />
+    <Image Include="data\hp.png" />
+    <Image Include="data\multi_ball.png" />
+    <Image Include="data\paddle.png" />
+    <Image Include="data\paddle_2.png" />
+    <Image Include="data\short_paddle.png" />
+    <Image Include="data\wide_paddle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\levels\campaign.txt" />
+    <Text Include="data\levels\level1.txt" />
+    <Text Include="data\levels\level2.txt" />
+    <Text Include="data\levels\level3.txt" />
+    <Text Include="data\scores.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="data\audio\ball_hit.wav" />
+    <Media Include="data\audio\ball_lose.wav" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
