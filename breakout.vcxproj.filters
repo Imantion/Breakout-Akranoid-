@@ -238,6 +238,9 @@
     <None Include="data\audio\lose.ogg" />
     <None Include="data\audio\menu_music.ogg" />
     <None Include="data\audio\win.ogg" />
+    <None Include="copy_deps.bat">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Font Include="data\asd.ttf" />

@@ -113,7 +113,7 @@
 ;sfml-network-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>"$(ProjectDir)copy_deps.bat" "$(TargetDir)" "$(ConfigurationName)"</Command>
+      <Command>"$(ProjectDir)copy_deps.bat" "$(TargetDir)" Debug</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -134,7 +134,7 @@
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;sfml-audio.lib;sfml-network.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>"$(ProjectDir)copy_deps.bat" "$(TargetDir)" "$(ConfigurationName)"</Command>
+      <Command>"$(ProjectDir)copy_deps.bat" "$(TargetDir)" Release</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -214,6 +214,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />
+    <None Include="copy_deps.bat" />
     <None Include="data\audio\ability_pickup.ogg" />
     <None Include="data\audio\gameplay_music.ogg" />
     <None Include="data\audio\lose.ogg" />
