@@ -6,26 +6,29 @@
 :: Usage: copy_dependencies.bat <TargetDir> <Configuration>
 :: ===========================================
 
-set TARGETDIR=%1
-set CONFIG=%2
+:: Use %~1 and %~2 to strip any surrounding quotes
+set "TARGETDIR=%~1"
+set "CONFIG=%~2"
 
 if "%TARGETDIR%"=="" (
     echo ERROR: No target directory specified
     exit /b 1
 )
 
+:: Ensure TARGETDIR ends with a backslash
+if not "%TARGETDIR:~-1%"=="\" set "TARGETDIR=%TARGETDIR%\"
+
 :: Determine SFML DLL suffix
 if /I "%CONFIG%"=="Debug" (
-    set SUFFIX=-d-3.dll
+    set "SUFFIX=-d-3.dll"
 ) else (
-    set SUFFIX=-3.dll
+    set "SUFFIX=-3.dll"
 )
 
-echo Copying SFML DLLs for %CONFIG% to %TARGETDIR%...
+echo Copying SFML DLLs for %CONFIG% to "%TARGETDIR%"...
 
 :: List of SFML modules
 set MODULES=graphics window system audio network
-
 for %%M in (%MODULES%) do (
     if not exist "%TARGETDIR%sfml-%%M%SUFFIX%" (
         copy /Y "%~dp0SFML-3.0.2\bin\sfml-%%M%SUFFIX%" "%TARGETDIR%"
