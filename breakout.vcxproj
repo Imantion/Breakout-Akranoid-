@@ -113,7 +113,7 @@
 ;sfml-network-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>"$(ProjectDir)copy_deps.bat" "$(TargetDir)" Debug</Command>
+      <Command>"$(ProjectDir)copy_deps.bat" $(TargetDir) Debug</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -134,7 +134,7 @@
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;sfml-audio.lib;sfml-network.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>"$(ProjectDir)copy_deps.bat" "$(TargetDir)" Release</Command>
+      <Command>"$(ProjectDir)copy_deps.bat" $(TargetDir) Release</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
