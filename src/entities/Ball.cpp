@@ -8,6 +8,7 @@ Ball::Ball(const sf::Texture& texture, sf::Vector2f position, float radius)
     , m_Radius(radius)
     , m_Velocity({0.0f, 0.0f})
     , m_State(BallState::Free)
+	, m_ComboCount(0)
 {
     sf::Rect bounds = m_Sprite.getLocalBounds();
     m_Sprite.setOrigin(bounds.size * 0.5f);

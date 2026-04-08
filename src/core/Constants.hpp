@@ -45,7 +45,7 @@ namespace Breakout
 	// Scoring
 	constexpr int g_StartingLives = 3;
 	constexpr int g_ScorePerBrick = 10;
-	constexpr int g_DestroyedInRow = 3;
+	constexpr int g_DestroyedInRow = 2;
 	constexpr int g_DestroyedInRowBonus = 20;
 	constexpr int g_MaxScoreEntries = 10;
 	constexpr char g_DefaultPlayerName[] = "Player";
