@@ -113,12 +113,7 @@
 ;sfml-network-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>if not exist "$(TargetDir)sfml-graphics-d-3.dll" copy "$(ProjectDir)SFML-3.0.2\bin\sfml-graphics-d-3.dll" "$(OutDir)"
-    if not exist "$(TargetDir)sfml-window-d-3.dll"   copy "$(ProjectDir)SFML-3.0.2\bin\sfml-window-d-3.dll" "$(OutDir)"
-    if not exist "$(TargetDir)sfml-system-d-3.dll"   copy "$(ProjectDir)SFML-3.0.2\bin\sfml-system-d-3.dll" "$(OutDir)"
-    if not exist "$(TargetDir)sfml-audio-d-3.dll"    copy "$(ProjectDir)SFML-3.0.2\bin\sfml-audio-d-3.dll" "$(OutDir)"
-    if not exist "$(TargetDir)sfml-network-d-3.dll"  copy "$(ProjectDir)SFML-3.0.2\bin\sfml-network-d-3.dll" "$(OutDir)"
-if exist "$(ProjectDir)data" xcopy /E /I /-Y "$(ProjectDir)data" "$(TargetDir)data"</Command>
+      <Command>"$(ProjectDir)copy_deps.bat" "$(TargetDir)" "$(ConfigurationName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -139,12 +134,7 @@ if exist "$(ProjectDir)data" xcopy /E /I /-Y "$(ProjectDir)data" "$(TargetDir)da
       <AdditionalDependencies>sfml-graphics.lib;sfml-window.lib;sfml-system.lib;sfml-audio.lib;sfml-network.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>if not exist "$(TargetDir)sfml-graphics-3.dll" copy "$(ProjectDir)SFML-3.0.2\bin\sfml-graphics-3.dll" "$(OutDir)"
-    if not exist "$(TargetDir)sfml-window-3.dll"   copy "$(ProjectDir)SFML-3.0.2\bin\sfml-window-3.dll" "$(OutDir)"
-    if not exist "$(TargetDir)sfml-system-3.dll"   copy "$(ProjectDir)SFML-3.0.2\bin\sfml-system-3.dll" "$(OutDir)"
-    if not exist "$(TargetDir)sfml-audio-3.dll"    copy "$(ProjectDir)SFML-3.0.2\bin\sfml-audio-3.dll" "$(OutDir)"
-    if not exist "$(TargetDir)sfml-network-3.dll"  copy "$(ProjectDir)SFML-3.0.2\bin\sfml-network-3.dll" "$(OutDir)"
-if exist "$(ProjectDir)data" xcopy /E /I /-Y "$(ProjectDir)data" "$(TargetDir)data"</Command>
+      <Command>"$(ProjectDir)copy_deps.bat" "$(TargetDir)" "$(ConfigurationName)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
