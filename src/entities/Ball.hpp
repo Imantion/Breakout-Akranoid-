@@ -26,6 +26,7 @@ public:
     BallState    GetState()    const;
     bool         IsAttached()  const;
 
+    sf::CircleShape m_circle;
 private:
     float        m_Radius;
     sf::Vector2f m_Velocity;

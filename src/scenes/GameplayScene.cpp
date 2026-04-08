@@ -273,7 +273,6 @@ void GameplayScene::_handleAim()
     auto& window = Game::Get()->GetWindow();
     auto mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
     sf::Vector2f ballCenter = attachedBall->GetPosition();
-    ballCenter.x += attachedBall->GetWidth() * 0.5f;
     m_AimLine.Update(ballCenter, mousePos);
 }
 

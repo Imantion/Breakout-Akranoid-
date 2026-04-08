@@ -17,9 +17,9 @@ void MovementSystem::Update(Paddle& paddle, std::span<Ball*> balls,
 
         if (ball->IsAttached())
         {
-            float ballX = paddle.GetPosition().x + paddle.GetWidth() / 2.0f - ball->GetRadius();
-            float ballY = paddle.GetPosition().y - ball->GetRadius();
-            ball->SetPosition({ballX, ballY});
+            sf::Vector2f newPosition = paddle.GetPosition();
+			newPosition.x += paddle.GetWidth() / 2.0f;
+            ball->SetPosition(newPosition);
             continue;
         }
 

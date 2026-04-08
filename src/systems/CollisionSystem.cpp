@@ -66,7 +66,7 @@ void CollisionSystem::_handleWallCollisions(std::span<Ball*> balls) const
             ball->SetPosition(pos);
             ball->SetVelocity(vel);
             Game::Get()->GetEventBus().Publish(BallLostEvent{ball->GetUUID()});
-            return;
+            continue;
         }
 
         ball->SetPosition(pos);
@@ -152,14 +152,14 @@ void CollisionSystem::_handleBrickCollisions(std::span<Ball*> balls, std::span<B
             if (minOverlapX < minOverlapY)
             {
                 ballVel.x = -ballVel.x;
-                /*float offset = std::abs(collision.DiffVector.x - r);
-                ballPos.x += (overlapLeft < overlapRight) ? -offset : offset;*/
+                float offset = std::abs(collision.DiffVector.x - r);
+                ballPos.x += (overlapLeft < overlapRight) ? -offset : offset;
             }
             else
             {
                 ballVel.y = -ballVel.y;
-                /*float offset = std::abs(collision.DiffVector.y - r);
-                ballPos.y += (overlapTop < overlapBottom) ? -offset : offset;*/
+                float offset = std::abs(collision.DiffVector.y - r);
+                ballPos.y += (overlapTop < overlapBottom) ? -offset : offset;
             }
 
             ball->SetPosition(ballPos);
