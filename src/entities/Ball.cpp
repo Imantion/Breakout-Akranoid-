@@ -9,8 +9,8 @@ Ball::Ball(const sf::Texture& texture, sf::Vector2f position, float radius)
     , m_Velocity({0.0f, 0.0f})
     , m_State(BallState::Free)
 {
-    m_Sprite.setOrigin({m_Radius, m_Radius});
-    m_Sprite.setPosition(m_Position);
+    sf::Rect bounds = m_Sprite.getLocalBounds();
+    m_Sprite.setOrigin(bounds.size * 0.5f);
 }
 
 void Ball::SetVelocity(sf::Vector2f velocity)

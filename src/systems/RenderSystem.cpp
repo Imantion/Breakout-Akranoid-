@@ -1,5 +1,6 @@
 #include "RenderSystem.hpp"
 #include "core/Constants.hpp"
+#include "entities/Ball.hpp"
 
 namespace Breakout
 {
