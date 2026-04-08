@@ -24,6 +24,7 @@ struct BallHitBrickEvent
 struct BrickDeathEvent
 {
     uuids::uuid brickUUID;
+    uuids::uuid killerUUID;
 };
 
 struct BallLostEvent

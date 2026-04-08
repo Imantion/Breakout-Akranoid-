@@ -13,7 +13,7 @@ public:
     DestructibleBrick(std::vector<const sf::Texture*> textures, sf::Vector2f position,
                       float width, float height, int colorIndex, int hp);
 
-    void OnHit() override;
+    void OnHit(uuids::uuid hitWith) override;
     bool IsDestructible() const override;
 
     int GetHp()    const;

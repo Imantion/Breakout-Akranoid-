@@ -17,7 +17,7 @@ public:
     Actor(Actor&&) = default;
     Actor& operator=(Actor&&) = default;
 
-    virtual void OnHit() {}
+    virtual void OnHit(uuids::uuid hitWith) {}
 
     const uuids::uuid& GetUUID()     const;
     EntityType          GetType()     const;
