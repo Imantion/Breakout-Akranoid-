@@ -9,7 +9,7 @@ InvulnerableBrick::InvulnerableBrick(const sf::Texture& texture, sf::Vector2f po
 {
 }
 
-void InvulnerableBrick::OnHit()
+void InvulnerableBrick::OnHit(uuids::uuid hitWith)
 {
 }
 

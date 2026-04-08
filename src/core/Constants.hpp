@@ -122,4 +122,9 @@ namespace Breakout
 	constexpr unsigned int g_TitleFontSize = 96; // 64 * 1.5
 	constexpr unsigned int g_MenuFontSize = 48; // 32 * 1.5
 
+	// Speed multipliers
+	constexpr float g_SpeedMultiplierPerLevel = 1.05f;
+	constexpr float g_MaxSpeed = 600.0f;
+	constexpr float g_SpeedMultiplierPerKill = 1.02f;
+
 } // namespace Breakout

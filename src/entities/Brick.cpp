@@ -38,10 +38,10 @@ sf::Color Brick::GetColor() const
     return m_Color;
 }
 
-void Brick::Kill()
+void Brick::Kill(uuids::uuid killedBy)
 {
     m_IsAlive = false;
-    Game::Get()->GetEventBus().Publish(BrickDeathEvent{m_UUID});
+    Game::Get()->GetEventBus().Publish(BrickDeathEvent{.brickUUID = m_UUID, .killerUUID = killedBy});
 }
 
 } // namespace Breakout

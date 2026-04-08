@@ -15,10 +15,10 @@ public:
     Brick(EntityType type, const sf::Texture& texture, sf::Vector2f position,
           float width, float height, int colorIndex);
 
-    void OnHit() override = 0;
+    void OnHit(uuids::uuid hitWith) override = 0;
 
     bool      IsAlive()        const;
-    void      Kill();
+    void      Kill(uuids::uuid killedBy);
     virtual bool IsDestructible() const = 0;
     sf::Color GetColor()       const;
 

@@ -54,6 +54,9 @@ GameplayScene::GameplayScene(std::vector<std::unique_ptr<Brick>> bricks)
 
     float livesX = g_WindowWidth - g_HudMargin - g_LivesLabelRightOffset;
     m_LivesLabel.SetPosition({livesX, g_HudMargin});
+
+    m_BricksAlive = std::ranges::count_if(m_Bricks,
+        [](Brick* b) { return b && b->IsDestructible() && b->IsAlive(); });
 }
 
 void GameplayScene::OnEnter()
@@ -167,9 +170,10 @@ void GameplayScene::_subscribeEvents()
     Game::Get()->GetEventBus().Subscribe<BrickDeathEvent>(
         [this](const BrickDeathEvent& event)
         {
-            auto* actor = FindActor(event.brickUUID);
+            Actor* actor = FindActor(event.brickUUID);
             if (!actor || actor->GetType() != EntityType::Destructible) 
                 return;
+
             auto* brick = static_cast<Brick*>(actor);
 
             ++m_DestroyedInRow;
@@ -179,10 +183,15 @@ void GameplayScene::_subscribeEvents()
 
             _spawnAbility(brick->GetPosition());
 
-            bool allDestroyed = std::none_of(m_Bricks.begin(), m_Bricks.end(),
-                [](Brick* b) { return b && b->IsDestructible() && b->IsAlive(); });
+			Actor* killer = FindActor(event.killerUUID);
+            if (killer && killer->GetType() == EntityType::Ball)
+            {
+				Ball* ball = static_cast<Ball*>(killer);
+                ball->SetVelocity(ball->GetVelocity() * g_SpeedMultiplierPerKill);
+            }
 
-            if (allDestroyed)
+            --m_BricksAlive;
+            if (m_BricksAlive <= 0)
                 Game::Get()->OnLevelComplete(m_Score);
         });
 

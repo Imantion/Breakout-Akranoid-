@@ -15,13 +15,13 @@ DestructibleBrick::DestructibleBrick(std::vector<const sf::Texture*> textures,
 {
 }
 
-void DestructibleBrick::OnHit()
+void DestructibleBrick::OnHit(uuids::uuid hitWith)
 {
     m_Hp--;
 
     if (m_Hp <= 0)
     {
-        Kill();
+        Kill(hitWith);
         return;
     }
 
