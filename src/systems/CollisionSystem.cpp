@@ -167,15 +167,7 @@ void CollisionSystem::_handleBrickCollisions(std::span<Ball*> balls, std::span<B
         const float minOverlapX = std::min(overlapLeft, overlapRight);
         const float minOverlapY = std::min(overlapTop, overlapBottom);
 
-        bool resolveX;
-        if (minOverlapX < minOverlapY * 0.95f)
-            resolveX = true;
-        else if (minOverlapY < minOverlapX * 0.95f)
-            resolveX = false;
-        else
-            resolveX = std::abs(ballVel.x) > std::abs(ballVel.y);
-
-        if (resolveX)
+        if (minOverlapX < minOverlapY)
         {
             ballVel.x = -ballVel.x;
             ballPos.x += (overlapLeft < overlapRight) ? -overlapLeft : overlapRight;
