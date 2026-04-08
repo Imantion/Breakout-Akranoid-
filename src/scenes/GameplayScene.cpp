@@ -21,7 +21,6 @@ namespace Breakout
 GameplayScene::GameplayScene(std::vector<std::unique_ptr<Brick>> bricks)
     : m_Score(0)
     , m_Lives(g_StartingLives)
-    , m_DestroyedInRow(0)
     , m_ScoreLabel(Game::Get()->GetFont(), "Score: 0",
                    g_HudFontSize, {g_HudMargin, g_HudMargin})
     , m_LivesLabel(Game::Get()->GetFont(),
@@ -176,10 +175,7 @@ void GameplayScene::_subscribeEvents()
 
             auto* brick = static_cast<Brick*>(actor);
 
-            ++m_DestroyedInRow;
-            m_Score += m_DestroyedInRow >= g_DestroyedInRow
-                ? g_ScorePerBrick + g_DestroyedInRowBonus
-                : g_ScorePerBrick;
+            m_Score += g_ScorePerBrick;
 
             _spawnAbility(brick->GetPosition());
 
@@ -188,6 +184,12 @@ void GameplayScene::_subscribeEvents()
             {
 				Ball* ball = static_cast<Ball*>(killer);
                 ball->SetVelocity(ball->GetVelocity() * g_SpeedMultiplierPerKill);
+                ball->IncrementCombo();
+                if (ball->GetComboCount() > g_DestroyedInRow)
+                {
+                    int comboScore = g_DestroyedInRowBonus * ball->GetComboCount();
+                    m_Score += comboScore;
+				}
             }
 
             --m_BricksAlive;
@@ -219,13 +221,17 @@ void GameplayScene::_subscribeEvents()
             }
 
             _resetBall(*ball);
-            m_DestroyedInRow = 0;
+            ball->ResetCombo();
         });
 
     Game::Get()->GetEventBus().Subscribe<BallHitPaddleEvent>(
-        [this](const BallHitPaddleEvent&)
+        [this](const BallHitPaddleEvent& event)
         {
-            m_DestroyedInRow = 0;
+            Actor* ball = FindActor(event.ballUUID);
+            if (!ball || ball->GetType() != EntityType::Ball)
+                return;
+
+            static_cast<Ball*>(ball)->ResetCombo();
         });
 
     Game::Get()->GetEventBus().Subscribe<AbilityPickedUpEvent>(

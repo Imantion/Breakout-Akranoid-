@@ -70,7 +70,6 @@ private:
     int      m_Score;
     int      m_Lives;
     int      m_BricksAlive;
-    uint32_t m_DestroyedInRow;
     Label    m_ScoreLabel;
     Label    m_LivesLabel;
 

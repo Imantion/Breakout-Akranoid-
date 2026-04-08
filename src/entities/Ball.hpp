@@ -26,11 +26,16 @@ public:
     BallState    GetState()    const;
     bool         IsAttached()  const;
 
+	void         IncrementCombo() { ++m_ComboCount; }
+	void         ResetCombo() { m_ComboCount = 0; }
+	uint32_t     GetComboCount() const { return m_ComboCount; }
+
     sf::CircleShape m_circle;
 private:
     float        m_Radius;
     sf::Vector2f m_Velocity;
     BallState    m_State;
+    uint32_t     m_ComboCount;
 };
 
 } // namespace Breakout
